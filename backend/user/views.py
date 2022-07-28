@@ -14,7 +14,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import UserLoginForm, UserCreationForm, UserAvatar, ResetPasswordForm
+from .forms import UserLoginForm, UserCreationForm, ResetPasswordForm
 from .send_email import send_mail
 from .serializers import *
 from .token_generator import password_reset_token
@@ -78,6 +78,7 @@ class UserLogin(APIView):
     def post(self, request):
         form = UserLoginForm(request.data)
         if form.is_valid():
+            print(form.data)
             user = authenticate(email=form.cleaned_data["email"],
                                 password=form.cleaned_data["password"])
             if user:
@@ -95,6 +96,7 @@ class UserLogin(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class ResetPasswordView(APIView):
     """
+        Creates a new password when the exisiting one is forgotten
     """
 
     schema = ResetPasswordSchema()
@@ -179,21 +181,3 @@ class ResetPasswordCompleteView(APIView):
         for _ in range(6):
             token += "1234567890"[random.randint(0, 9)]
         return int(token)
-
-
-class UserAddAvatar(APIView):
-    def patch(self, request):
-        """update user avatar"""
-        form = UserAvatar(request.FILES)
-
-        if form.is_valid():
-            if request.FILES:
-                user = User.objects.get(user=request.user)
-                user.avatar = request.FILES[0]
-                user.save()
-                return Response(
-                    {"message": "avatar updated successfully"}, status=status.HTTP_200_OK
-                )
-            return Response(
-                {"message": "invalid image"}, status=status.HTTP_400_BAD_REQUEST
-            )

@@ -1,4 +1,3 @@
-
 from django import forms
 from .models import User
 from django.core.exceptions import ValidationError
@@ -9,13 +8,13 @@ class UserCreationForm(forms.ModelForm):
     email = forms.EmailField(help_text="Email is required")
     phone_number = forms.CharField(
         max_length=13, help_text="Phone number is required")
-    username = forms.CharField(
-        max_length=150, help_text="Username is required")
+    first_name = forms.CharField(
+        max_length=150, help_text="First name is required")
     is_vendor = forms.BooleanField(required=False, help_text="I want to be a vendor")
 
     class Meta:
         model = User
-        fields = ["phone_number", "email", "username", "password", "is_vendor"]
+        fields = ["phone_number", "email", "first_name", "last_name", "password", "is_vendor"]
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
@@ -32,14 +31,20 @@ class UserCreationForm(forms.ModelForm):
             raise ValidationError("please provide your phone number")
         if not phone_number_validator(phone_no):
             raise ValidationError(
-                "please provide valid phone number eg +254712345678")
+                "please provide valid phone number eg 0712345678")
         return phone_no
 
-    def clean_username(self):
-        username = self.cleaned_data.get("username")
-        if not username:
-            raise ValidationError("Username is required")
-        return username
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get("first_name")
+        if not first_name:
+            raise ValidationError("First name is required")
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get("last_name")
+        if not last_name:
+            raise ValidationError("Last name is required")
+        return last_name
 
     def clean_is_vendor(self):
         is_vendor = self.cleaned_data.get("is_vendor")
@@ -71,7 +76,3 @@ class ResetPasswordForm(forms.Form):
         if not (password1 == password2):
             raise ValidationError("Passwords don't match")
         return password1
-
-
-class UserAvatar(forms.Form):
-    avatar = forms.ImageField(required=False)

@@ -6,8 +6,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-
-
 # local modules
 from .managers import UserManager
 
@@ -17,15 +15,15 @@ def upload(instance, filename):
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=30, blank=False, unique=True)
+    # first_name = models.CharField(max_length=30, blank=False, unique=True)
+    # last_name = models.CharField(max_length=30, blank=False, unique=True)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(
         max_length=13, null=False, blank=False, unique=True)
-    avatar = models.ImageField(null=True, blank=True, upload_to='media/')
     is_vendor = models.BooleanField(default=False, blank=True)
-
+    username = None
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "phone_number"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "phone_number"]
     objects = UserManager()
 
     def __str__(self) -> str:

@@ -2,7 +2,6 @@ from django.db import models
 from user.models import User
 
 
-
 # Address
 class Location(models.Model):
     lng = models.FloatField(
@@ -26,6 +25,6 @@ class Location(models.Model):
 
 # Create your models here.
 class Client(models.Model):
-    user=models.OneToOneField(User,models.CASCADE)
-    address=models.ForeignKey(Location,on_delete=models.PROTECT,
-        related_name="location",)
+    user = models.OneToOneField(User, models.CASCADE)
+    address = models.ForeignKey(Location, on_delete=models.PROTECT,
+                                related_name="location", )

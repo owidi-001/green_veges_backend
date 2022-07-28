@@ -8,7 +8,8 @@ class RegistrationSchema(AutoSchema):
         extra_fields = []
         if method.lower() == "post":
             extra_fields = [
-                coreapi.Field("username", required=True, location="form"),
+                coreapi.Field("first_name", required=True, location="form"),
+                coreapi.Field("last_name", required=True, location="form"),
                 coreapi.Field(
                     "email", required=True, location="form", schema=coreschema.String()
                 ),
@@ -18,7 +19,7 @@ class RegistrationSchema(AutoSchema):
                     location="form",
                     schema=coreschema.String(
                         pattern=r"\+254\w{9}",
-                        description="must start with +254... eg +2547 xxxx xxxx",
+                        description="must start with 07... eg 07 xxxx xxxx",
                     ),
                 ),
                 coreapi.Field("password", required=True, location="form"),
@@ -43,11 +44,13 @@ class UserSchema(AutoSchema):
         extra_fields = []
         if method.lower() in ["put", "post"]:
             extra_fields = [
-                coreapi.Field("email", required=False, location="form"),
-                coreapi.Field("phone_number", required=False, location="form"),
-                coreapi.Field("username", required=False,
+                coreapi.Field("first_name", required=True,
                               location="form", schema=None),
-                coreapi.Field("avatar", required=False, location="form"),
+                coreapi.Field("last_name", required=True,
+                              location="form", schema=None),
+                coreapi.Field("email", required=True, location="form"),
+                coreapi.Field("phone_number", required=True, location="form"),
+                coreapi.Field("is_vendor", required=False, location="form"),
 
             ]
         manual_fields = super().get_manual_fields(path, method)
