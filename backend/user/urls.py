@@ -13,5 +13,4 @@ urlpatterns = [
     # reset password done
     path("auth/reset_password/", ResetPasswordView.as_view(), name="reset"),
     path("auth/reset_password_complete/<uidb64>/<token>/", ResetPasswordCompleteView.as_view(), name="reset"),
-
 ]

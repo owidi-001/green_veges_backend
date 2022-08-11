@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'user',
     'product',
     'client',
-    'vendor'
+    'vendor',
+    'order'
 ]
 
 # rest framework documentation

@@ -5,8 +5,8 @@ from .models import Client
 
 # Register your models here.
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ["user", "address"]
-    list_filter = ["user", "address"]
+    list_display = ["user", ]
+    list_filter = ["user", ]
 
 
 admin.site.register(Client, ClientAdmin)
