@@ -23,25 +23,16 @@ class ProductView(APIView):
     """
 
     schema = ProductSchema()
-
+    #
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-
-    def get_product(self, request):
-        product_id = request.data.get("product_id")
-        product = get_object_or_404(Product, id=product_id)
-
-        if product:
-            return product
-        else:
-            return None
 
     """ Returns all available products """
 
     def get(self):
         products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True).data
-        return Response(serializer)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
 
     """ Creates new product to the database """
 
