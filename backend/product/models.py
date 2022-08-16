@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from user.models import User
+
+from vendor.models import Vendor
 
 
 class Category(models.Model):
@@ -18,7 +18,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to="media/product")
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
-    vendor = models.ForeignKey(User, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name='quantity', default=1)
 
     def __str__(self):

@@ -13,6 +13,9 @@ from .serializer import ProductSerializer
 
 
 # class views
+from vendor.models import Vendor
+
+
 @csrf_exempt
 class ProductView(APIView):
     """
@@ -43,6 +46,7 @@ class ProductView(APIView):
     """ Creates new product to the database """
 
     def post(self, request):
+        vendor = get_object_or_404(Vendor, user=request.user)
         serializer = ProductSerializer(data=request.data)
 
         if serializer.is_valid():

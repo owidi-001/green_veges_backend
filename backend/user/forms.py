@@ -76,3 +76,16 @@ class ResetPasswordForm(forms.Form):
         if not (password1 == password2):
             raise ValidationError("Passwords don't match")
         return password1
+
+
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField(help_text="Email is required")
+    phone_number = forms.CharField(
+        max_length=13, help_text="Phone number is required")
+    first_name = forms.CharField(
+        max_length=150, help_text="First name is required")
+    is_vendor = forms.BooleanField(required=False, help_text="I want to be a vendor")
+
+    class Meta:
+        model = User
+        fields = ["phone_number", "email", "first_name", "last_name", "password", "is_vendor"]

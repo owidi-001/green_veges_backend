@@ -10,11 +10,13 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import UserLoginForm, UserCreationForm, ResetPasswordForm
+from .forms import UserLoginForm, UserCreationForm, ResetPasswordForm, UserUpdateForm
 from .send_email import send_mail
 from .serializers import *
 from .token_generator import password_reset_token
@@ -181,3 +183,60 @@ class ResetPasswordCompleteView(APIView):
         for _ in range(6):
             token += "1234567890"[random.randint(0, 9)]
         return int(token)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UserProfileView(APIView):
+    """
+    Queries the user details and presents as full profile
+
+    """
+    schema = UserSchema()
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = get_object_or_404(User, user=request.user)
+        if user:
+            data = UserSerializer(user).data
+
+            return Response(data, status=200)
+        return Response({"errors": ["User not found"]}, status=400)
+
+    def put(self, request):
+        """update profile - email, phone number"""
+        form = UserUpdateForm(request.data)
+
+        if form.is_valid():
+            user = get_object_or_404(User, username=request.user.username)
+
+            print("User retrieved", user.email)
+
+            if form.cleaned_data.get("first_name"):
+                print(form.cleaned_data.get("first_name"))
+                user.first_name = form.cleaned_data["first_name"]
+                user.save()
+
+            if form.cleaned_data.get("last_name"):
+                print(form.cleaned_data.get("last_name"))
+                user.last_name = form.cleaned_data["last_name"]
+                user.save()
+
+            if form.cleaned_data.get("email"):
+                print(form.cleaned_data.get("email"))
+                user.email = form.cleaned_data["email"]
+                user.save()
+
+            if form.cleaned_data.get("phone_number"):
+                user.phone_number = form.cleaned_data["phone_number"]
+                user.save()
+
+            try:
+                user.save()
+                print("Client saved")
+
+            except:
+                print(user)
+            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
