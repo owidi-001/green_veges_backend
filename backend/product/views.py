@@ -1,22 +1,20 @@
 from django.shortcuts import get_object_or_404
 # from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .schema import ProductSchema
+from .forms import ProductUpdateForm
 from .models import Product
+from .schema import ProductSchema
 from .serializer import ProductSerializer
-
 
 # class views
 from vendor.models import Vendor
 
 
-@csrf_exempt
 class ProductView(APIView):
     """
     List all products and CRUD operations for detail view for the product
@@ -29,48 +27,50 @@ class ProductView(APIView):
 
     """ Returns all available products """
 
-    def get(self):
-        products = Product.objects.all()
+    def get(self, request):
+        vendor = get_object_or_404(Vendor, user=request.user)
+        if vendor:
+            products = Product.objects.filter(vendor=vendor)
+        else:
+            products = Product.objects.all()
+
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
-    """ Creates new product to the database """
-
-    def post(self, request):
-        vendor = get_object_or_404(Vendor, user=request.user)
-        serializer = ProductSerializer(data=request.data)
-
-        if serializer.is_valid():
-            product = serializer.save()
-            return Response(product, status=201)
-
-        return Response(serializer.errors, status=400)
-
-    """ Updates an existing product price, description and label"""
-
     def put(self, request):
-        product = self.get_product(request)
+        form = ProductUpdateForm(request.data)
 
-        if product:
-            if request.data.get("label"):
-                product.label = request.data.get("label")
-            if request.data.get("price"):
-                product.price = request.data.get("price")
-            if request.data.get("description"):
-                product.description = request.data.get("description")
+        if form.is_valid():
+            product = get_object_or_404(Product, id=request.data.get("product_id"))
 
-        serializer = ProductSerializer(data=product)
-        if serializer.is_valid():
-            product = serializer.save()
-            return Response(product, status=201)
+            if form.cleaned_data.get("label"):
+                product.label = form.cleaned_data.get("label")
 
-        return Response(serializer.errors, status=400)
+            if form.cleaned_data.get("price"):
+                product.unit_price = form.cleaned_data.get("price")
 
-    """ Removes product from the database """
+            if form.cleaned_data.get("description"):
+                product.description = form.cleaned_data.get("description")
+
+            if form.cleaned_data.get("quantity"):
+                product.quantity = form.cleaned_data.get("quantity")
+
+            product.save()
+
+            serializer = ProductSerializer(product)
+
+            return Response(serializer)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    """ Vendor deletes a product from db """
 
     def delete(self, request):
-        product = self.get_product(request)
+        product = get_object_or_404(Product, pk=request.data.get("product_id"))
+        vendor = request.user
 
-        if product:
+        if product.vendor == vendor:
             product.delete()
-            return Response(status=200)
+
+            return Response({"message": "Product deleted"})
+        else:
+            return Response({"message": "Only the vendor can delete this product"})
