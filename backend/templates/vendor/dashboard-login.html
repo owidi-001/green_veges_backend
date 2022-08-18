@@ -1,0 +1,54 @@
+{% extends "base_auth.html" %}
+{% load static %}
+
+{% block main %}
+<div class="box-form">
+	<div class="left">
+
+		<h1>Hello World.</h1>
+		<p>Welcome back. Sign in now and see how we handle your business</p>
+
+		<div class="contact">
+			<h4>Contact For Help</h4>
+			<div class="wrapper">
+				<p>
+					<span><i class="bi bi-telephone"></i></span>
+					<span>+254 712345679</span>
+				</p>
+				<p>
+					<span><i class="bi bi-envelope"></i></span>
+					<span>+254 712345679</span>
+				</p>
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="right">
+		<div class="container">
+			<h3>Login</h3>
+
+			<div class="inputs">
+				<input type="text" placeholder="user name">
+				<br>
+				<input type="password" placeholder="password">
+			</div>
+
+			<br><br>
+
+			<div class="forget-password">
+				<p>Forget password? <a href="#">Reset Password</a></p>
+			</div>
+
+			<br>
+			<button>Login</button>
+
+			<p class="auth-link">Don't have an account? <a href="{% url 'register'%}">Register with us.</a> <br> it
+				takes less than a minute.</p>
+		</div>
+	</div>
+
+</div>
+
+{% endblock main %}

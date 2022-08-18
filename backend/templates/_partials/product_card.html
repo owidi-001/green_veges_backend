@@ -1,0 +1,16 @@
+{% load static %}
+
+<div class="card">
+    <img src={{product.image}} class="card-img" alt="Product Image">
+    <div class="card-title">
+        <h2>{{product.label}}</h2>
+    </div>
+    <div class="card-text">
+        <p>{{product.description}}</p>
+    </div>
+    <div class="card-footer">
+        <p>$ {{product.unit-price}}</p>
+        <p>/</p>
+        <p>{{product.quantity}} pcs</p>
+    </div>
+</div>

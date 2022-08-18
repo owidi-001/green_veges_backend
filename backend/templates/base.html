@@ -2,18 +2,122 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passwords</title>
-{#    <link rel="stylesheet" href="css/main.css">#}
-    <link rel="stylesheet" href="{% static "/css/main.css"%}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{% static '/css/styles.css'%}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
 </head>
+
 <body>
-    {% block main %}
+    <!-- left side bar -->
+    <div class="leftside-menu">
+        <!-- LOGO -->
+        <span class="logo">
+            <a href="main.html" class="logo-icon">
+                <img src="{% static '/images/logo.png'%}" alt="">
+            </a>
+            <a href="text-label" class="logo-text">Fresh Veges</a>
+        </span>
+        <hr>
+
+        <div class="menu-container">
+            <!-- side menu -->
+
+            <ul class="side-nav-title">
+                <ul class="side-nav">
+
+                    <li class="side-nav-title side-nav-item">
+                        <span><i class="bi bi-house"></i></span>
+                        <span>Dashboard</span>
+                    </li>
+                    <br>
+                    <li class="side-nav-item menuitem-active">
+                        <div>
+                            <ul class="side-nav-second-level">
+                                <li class="menuitem">
+                                    <a href="{% url 'analytics'%}" class="active side-nav-link">
+                                        <span>
+                                            <i class="bi bi-bar-chart-fill"></i>
+                                        </span>
+                                        <span>Analytics</span>
+                                    </a>
+                                </li>
+                                <li class="menuitem">
+                                    <a href="{% url 'products'%}" class="side-nav-link">
+                                        <span>
+                                            <i class="bi bi-grid-fill"></i>
+                                        </span>
+                                        <span>Products</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <hr>
+                    <li class="side-nav-item menuitem-active bottom">
+                    <li class="menuitem">
+                        <a href="dashboard-contact.html" class="side-nav-link">
+                            <span>
+                                <i class="bi bi-person-lines-fill"></i>
+                            </span>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                    <li class="menuitem">
+                        <a href="dashboard-projects.html" class="side-nav-link">
+                            <span>
+                                <i class="bi bi-door-closed-fill"></i>
+                            </span>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+
+                    </li>
+
+                </ul>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="content-page">
+        <nav>
+
+            <div class="navbar-start">
+                <i class="bi bi-menu-app"></i>
+            </div>
+            <div class="navbar-end">
+
+                <a class="nav-link" href="#">
+                    <span class="account-user-avatar">
+                        <img src="{% static '/images/user.png'%}" alt="user-image" class="rounded-circle">
+                    </span>
+                    <span>
+                        <span class="account-user-name">John Doe</span>
+                        <span class="account-position">Vendor</span>
+                    </span>
+                </a>
+
+
+            </div>
+
+        </nav>
+
+        {% block main %}
 
     {% endblock main %}
+    </div>
+    <!-- end leftside menu -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+
 </body>
+
 </html>
