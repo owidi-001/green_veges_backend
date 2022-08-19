@@ -5,17 +5,16 @@ from product.models import Product
 from product.schema import ProductSchema
 from product.serializer import ProductSerializer
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from user.forms import UserCreationForm
-from user.serializers import UserSerializer
+# signup COMPLETE
+from user.forms import UserLoginForm
 from user.views import EmailThead
 from vendor.models import Vendor
 
-# signup COMPLETE
-from user.forms import UserLoginForm
+from user.models import User
 
 
 def dashboard_register(request):
@@ -66,7 +65,8 @@ def dashboard_login(request):
 
 
 def dashboard_analytics(request):
-    return render(request, "vendor/dashboard-analytics.html", {"title": "Vendor dashboard analytics"})
+    active_users = User.objects.filter(is_active=True).count()
+    return render(request, "vendor/dashboard-analytics.html", {"title": "Vendor dashboard analytics","active_users":active_users})
 
 
 def dashboard_products(request):

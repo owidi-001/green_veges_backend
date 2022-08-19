@@ -1,16 +1,20 @@
 {% load static %}
 
-<div class="card">
-    <img src={{product.image}} class="card-img" alt="Product Image">
-    <div class="card-title">
-        <h2>{{product.label}}</h2>
-    </div>
-    <div class="card-text">
-        <p>{{product.description}}</p>
-    </div>
-    <div class="card-footer">
-        <p>$ {{product.unit-price}}</p>
-        <p>/</p>
-        <p>{{product.quantity}} pcs</p>
-    </div>
+<div class="product-card">
+	<div class="badge">New</div>
+	<div class="product-tumb">
+		<img src="{{product.image.url}}" alt="Product Image">
+	</div>
+	<div class="product-details">
+		<span class="product-category">{{product.category.name}}</span>
+		<h4><a href="">{{product.label}}</a></h4>
+		<p>{{product.description}}</p>
+		<div class="product-bottom-details">
+			<div class="product-price">${{product.unit_price}}/ <small>piece</small></div>
+			<div class="product-links">
+				<a href=""><i class="bi bi-pencil-square"></i></a>
+				<a href=""><i class="bi bi-trash"></i></a>
+			</div>
+		</div>
+	</div>
 </div>
