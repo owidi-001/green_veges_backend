@@ -1,21 +1,68 @@
-from django.shortcuts import get_object_or_404, render
+from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404, render, redirect
+from django.template.loader import render_to_string
 from product.models import Product
 from product.schema import ProductSchema
 from product.serializer import ProductSerializer
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from user.forms import UserCreationForm
+from user.serializers import UserSerializer
+from user.views import EmailThead
 from vendor.models import Vendor
 
-
-# vendor dashboard
-def dashboard_login(request):
-    return render(request, "vendor/dashboard-login.html", {"title": "Vendor dashboard login"})
+# signup COMPLETE
+from user.forms import UserLoginForm
 
 
 def dashboard_register(request):
-    return render(request, "vendor/dashboard-register.html", {"title": "Vendor dashboard register"})
+    form = UserCreationForm(request.POST)
+    # if not form.is_valid():
+    #     print(form.errors)
+
+    if request.method == 'POST' and form.is_valid():
+        user = form.save()
+        email_to = form.cleaned_data.get("email")
+        print("Emailing to:", email_to)
+        scheme = request.build_absolute_uri().split(":")[0]
+        path = f"{scheme}://{request.get_host()}/login"
+        print(path)
+        message = render_to_string("registration_email.html", {
+            "email": email_to, "path": path})
+        subject = "Registration confirmation"
+
+        EmailThead([email_to], message, subject).start()
+
+        try:
+            username = form.cleaned_data.get("email")
+            password = form.cleaned_data.get("password1")
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+            return redirect("analytics")
+        except:
+            return redirect('login')
+    else:
+        return render(request, "vendor/dashboard-register.html",
+                      {"title": "Vendor dashboard register", "errors": form.errors})
+
+
+def dashboard_login(request):
+    form = UserLoginForm(request.POST or None)
+    if request.POST and form.is_valid():
+        username = form.cleaned_data.get('email')
+        password = form.cleaned_data.get('password')
+        print(username)
+        print(password)
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('analytics')
+
+    return render(request, "vendor/dashboard-login.html", {"title": "Vendor dashboard login"})
 
 
 def dashboard_analytics(request):

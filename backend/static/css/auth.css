@@ -115,6 +115,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 25vw;
   padding: 30px;
 }
 
@@ -122,11 +123,6 @@ body {
   min-height: 80%;
 }
 
-/* @media (max-width: 980px) {
-  .box-form .right {
-    width: 100%;
-  }
-} */
 
 .box-form .right h3 {
   font-size: 5vmax;
@@ -135,6 +131,13 @@ body {
 
 .box-form .right .inputs {
   overflow: hidden;
+}
+
+.box-form .right .inputs .row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
 }
 
 .box-form .right input {
@@ -153,7 +156,7 @@ body {
 }
 
 
-.box-form .right button {
+.box-form .right input[type=submit] {
   color: var(--gradientColor);
   font-size: 16px;
   padding: 12px 35px;

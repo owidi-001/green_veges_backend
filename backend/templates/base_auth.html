@@ -15,9 +15,38 @@
 
 <body>
 	<div class="container">
-		{% block main %}
 
-		{% endblock main %}
+		<div class="box-form">
+			<div class="left">
+
+				<h1>Hello World.</h1>
+				<p>Welcome back. Sign in now and see how we handle your business</p>
+
+				<div class="contact">
+					<h4>Contact For Help</h4>
+					<div class="wrapper">
+						<p>
+							<span><i class="bi bi-telephone"></i></span>
+							<span>+254 712345679</span>
+						</p>
+						<p>
+							<span><i class="bi bi-envelope"></i></span>
+							<span> contact@gmail.com</span>
+						</p>
+					</div>
+				</div>
+
+			</div>
+
+
+			<div class="right">
+				{% block main %}
+
+				{% endblock main %}
+			</div>
+
+		</div>
+
 	</div>
 </body>
 

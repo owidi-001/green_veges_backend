@@ -2,52 +2,34 @@
 {% load static %}
 
 {% block main %}
-<div class="box-form">
-	<div class="left">
 
-		<h1>Hello World.</h1>
-		<p>Welcome back. Sign in now and see how we handle your business</p>
+<div class="container">
+	<form action="{% url 'register' %}" method="post">
+		{% csrf_token %}
+		<h3>Register</h3>
 
-		<div class="contact">
-			<h4>Contact For Help</h4>
-			<div class="wrapper">
-				<p>
-					<span><i class="bi bi-telephone"></i></span>
-					<span>+254 712345679</span>
-				</p>
-				<p>
-					<span><i class="bi bi-envelope"></i></span>
-					<span>+254 712345679</span>
-				</p>
+		<div class="inputs">
+			<div class="row">
+				<input type="text" placeholder="First Name" name="first_name">
+				<input type="text" placeholder="Last Name" name="last_name">
 			</div>
-		</div>
-
-	</div>	
-
-
-	<div class="right">
-		<div class="container">
-			<h3>Login</h3>
-
-			<div class="inputs">
-				<input type="email" placeholder="Email">
-				<br>
-				<input type="text" placeholder="Phone">
-				<br>
-				<input type="password" placeholder="Password">
-				<br>
-				<input type="password" placeholder="Confirm password">
-			</div>
-
-			<br><br>
-
+			<input type="email" placeholder="Email" name="email">
 			<br>
-			<button>Register</button>
-
-			<p class="auth-link">Already have an account? <a href="{% url 'login'%}">Login </a> to access your page.</p>
+			<input type="text" placeholder="Phone" name="phone_number">
+			<br>
+			<input type="password" placeholder="Password" name="password">
+			<br>
+			<input type="password" placeholder="Confirm password" name="password2">
 		</div>
-	</div>
 
+		<br><br>
+
+		<br>
+		<input type="submit" name="submit" value="Register">
+
+		<p class="auth-link">Already have an account? <a href="{% url 'login'%}">Login </a> to access your page.</p>
+	</form>
 </div>
+
 
 {% endblock main %}

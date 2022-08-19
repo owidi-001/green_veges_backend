@@ -133,7 +133,7 @@ img {
 .navbar-end .nav-link {
     display: flex;
     align-items: center;
-    justify-content: baseline;
+    justify-content: start;
     gap: 1em;
     background: var(--lightColor);
     border-left: 1px solid var(--lightColor);
