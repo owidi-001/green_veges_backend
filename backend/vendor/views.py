@@ -16,6 +16,10 @@ from vendor.models import Vendor
 
 from user.models import User
 
+from product.forms import ProductUpdateForm
+
+from product.models import Category
+
 
 def dashboard_register(request):
     form = UserCreationForm(request.POST)
@@ -66,7 +70,8 @@ def dashboard_login(request):
 
 def dashboard_analytics(request):
     active_users = User.objects.filter(is_active=True).count()
-    return render(request, "vendor/dashboard-analytics.html", {"title": "Vendor dashboard analytics","active_users":active_users})
+    return render(request, "vendor/dashboard-analytics.html",
+                  {"title": "Vendor dashboard analytics", "active_users": active_users})
 
 
 def dashboard_products(request):
@@ -75,6 +80,37 @@ def dashboard_products(request):
 
     return render(request, "vendor/dashboard-products.html",
                   {"title": "Vendor dashboard product", "products": products})
+
+
+# edit product
+def edit_product(request, id):
+    product = get_object_or_404(Product, id=id)
+    form = ProductUpdateForm(request.POST)
+    categories = Category.objects.all()
+
+    if form.is_valid():
+        if form.cleaned_data.get("label"):
+            product.label = form.cleaned_data.get("label")
+
+        if form.cleaned_data.get("price"):
+            product.unit_price = form.cleaned_data.get("price")
+
+        if form.cleaned_data.get("description"):
+            product.description = form.cleaned_data.get("description")
+
+        if form.cleaned_data.get("quantity"):
+            product.quantity = form.cleaned_data.get("quantity")
+
+        product.save()
+
+        return redirect('products')
+
+    return render(request, "vendor/product-edit.html", {'product': product, 'categories': categories,'current_category':product.category})
+
+
+def dashboard_contact(request):
+    return render(request, "vendor/dashboard-contact.html",
+                  {"title": "Vendor dashboard contact"})
 
 
 class VendorViews(APIView):

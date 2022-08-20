@@ -15,7 +15,7 @@
 .product-list{
     width: 100%;
     display: flex;
-    align-items: baseline;
+    align-items: start;
     justify-content: start;
     flex-wrap: wrap;
     gap: 1em;
@@ -110,7 +110,7 @@
 .product-price small {
     font-size: 80%;
     font-weight: 400;
-    text-decoration: line-through;
+    /*text-decoration: line-through;*/
     display: inline-block;
     margin-right: 5px;
 }
@@ -135,4 +135,83 @@
 
 .product-links a:hover {
     color: #fbb72c;
+}
+
+/* edit product form */
+/*.edit-form-container img{*/
+/*    width: 100%;*/
+/*    height: auto;*/
+/*}*/
+
+.edit-form-container input,textarea,select{
+    width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--secondaryColor);
+  outline: none;
+  background: var(--gradientColor);
+    border-radius: 0.2em;
+    margin-top: 0.5em;
+  /*border-bottom: 2px solid var(--primaryColor);*/
+}
+
+.edit-form-container .wrapper{
+    background: var(--whiteColor);
+    padding: 1em;
+    margin-top: 1em;
+    border-radius: 0.2em;
+}
+.edit-form-container table{
+    width: 100%;
+    /*background: pink;*/
+}
+.edit-form-container table thead th{
+    width: 100%;
+    column-span: all;
+    /*border-bottom: 1px solid var(--secondaryColor);*/
+    padding: 0.5em 0.2em;
+    background: var(--lightColor);
+    text-align: left;
+}
+.edit-form-container tr{
+    width: 100%;
+}
+.edit-form-container table:nth-child(1){
+    border: 1px solid var(--lightColor);
+    padding: 0.5em 0.5em;
+}
+.edit-form-container .table-nav{
+    padding: 0.2em;
+    display: flex;
+    align-items: start;
+    height: 100%;
+    color: var(--secondaryColor);
+}
+/* lower table */
+.edit-form-container .wrapper .row{
+    display: flex;
+    align-items: start;
+    gap: 2em;
+}
+
+.edit-form-container .wrapper .row .card{
+    padding: 0.5em;
+    background: var(--lightColor);
+    min-height: 10em;
+    min-width: 10em;
+}
+
+.edit-form-container .wrapper .row .card .header{
+    padding: 0.5em;
+    text-transform: uppercase;
+    color: var(--secondaryColor);
+}
+
+.edit-form-container .wrapper .row .card p{
+    padding: 1em 0.5em;
+    font-weight: 200;
+}
+
+.edit-form-container .wrapper .row  img{
+    width: 10em;
 }

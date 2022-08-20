@@ -98,6 +98,13 @@ img {
     gap: 1em;
 }
 
+.side-nav.bottom {
+    position: absolute;
+    bottom: 2em;
+    width: 100%;
+    border-top: 1px solid var(--gradientColor);
+}
+
 /* end left menu */
 
 /* start content page */
@@ -224,7 +231,7 @@ img {
     text-transform: uppercase;
 }
 
-.input-group .input-group-text, form a {
+.input-group .input-group-text, div a,input[type=submit] {
     display: flex;
     align-items: center;
     padding: .45rem .9rem;

@@ -33,7 +33,7 @@
                 <ul class="side-nav">
 
                     <li class="side-nav-title side-nav-item">
-                        <span><i class="bi bi-house"></i></span>
+                        <span><i class="bi bi-house-fill"></i></span>
                         <span>Dashboard</span>
                     </li>
                     <br>
@@ -56,18 +56,31 @@
                                         <span>Products</span>
                                     </a>
                                 </li>
+                                <li class="menuitem">
+                                    <a href="{% url 'products'%}" class="side-nav-link">
+                                        <span>
+                                            <i class="bi bi-bag-fill"></i>
+                                        </span>
+                                        <span>Orders</span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </li>
                     <li class="menuitem">
-                        <a href="dashboard-contact.html" class="side-nav-link">
+                        <a href="{% url 'contact'%}" class="side-nav-link">
                             <span>
                                 <i class="bi bi-person-lines-fill"></i>
                             </span>
                             <span>Contact</span>
                         </a>
                     </li>
-                    <hr>
+
+
+                </ul>
+
+                <ul class="side-nav bottom">
+
                     <li class="side-nav-item menuitem-active bottom">
                     <li class="menuitem">
                         <a href="dashboard-projects.html" class="side-nav-link">
@@ -79,7 +92,6 @@
                     </li>
 
                     </li>
-
                 </ul>
             </ul>
         </div>
