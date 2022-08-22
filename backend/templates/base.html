@@ -57,7 +57,7 @@
                                     </a>
                                 </li>
                                 <li class="menuitem">
-                                    <a href="{% url 'products'%}" class="side-nav-link">
+                                    <a href="{% url 'orders'%}" class="side-nav-link">
                                         <span>
                                             <i class="bi bi-bag-fill"></i>
                                         </span>
@@ -83,7 +83,7 @@
 
                     <li class="side-nav-item menuitem-active bottom">
                     <li class="menuitem">
-                        <a href="dashboard-projects.html" class="side-nav-link">
+                        <a href="{% url 'logout' %}" class="side-nav-link">
                             <span>
                                 <i class="bi bi-door-closed-fill"></i>
                             </span>
@@ -120,6 +120,14 @@
             </div>
 
         </nav>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
         {% block main %}
 

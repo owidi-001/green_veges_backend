@@ -4,20 +4,20 @@
 {% block main %}
 <main>
     <!-- page Title -->
-    <form class="edit-form" action="{% url 'product_edit' product.id %}" method="post">
+    <form class="edit-form" action="{% url 'create_product' %}" method="post">
         {% csrf_token %}
     <div class="page-title-box">
-        <h4 class="page-title">Edit Product</h4>
+        <h4 class="page-title">Create Product</h4>
 
         <div class="page-title-right">
             <div class="d-flex">
-                <input type="submit" class="btn" value="Update Product">
+                <input type="submit" class="btn" value="Create Product">
             </div>
         </div>
     </div>
 
     <div class="container edit-form-container">
-            <input type="text" name="label" id="label" value={{product.label}}>
+            <input type="text" name="label" id="label" placeholder="Product Name" >
             <br>
             <div class="wrapper">
                 <table>
@@ -37,19 +37,19 @@
                                 <table>
                                     <tr>
                                         <td>Price</td>
-                                        <td><input type="number" name="unit_price" id="unit_price" value="{{product.unit_price}}">
+                                        <td><input type="number" name="unit_price" id="unit_price" placeholder="Unit Price">
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Quantity</td>
                                         <td><input type="number" name="quantity" id="quantity"
-                                                value="{{product.quantity}}"></td>
+                                                placeholder="Quantity Available"></td>
                                     </tr>
                                     <tr>
                                         <td>Description</td>
                                         <td>
                                             <textarea name="description" id="description" cols="30" rows="8"
-                                                placeholder="{{product.description}}"></textarea>
+                                                placeholder="Product Description"></textarea>
                                         </td>
                                     </tr>
                                 </table>
@@ -71,7 +71,10 @@
                                 <h4>Product Image</h4>
                             </div>
                             <div class="body">
-                                <img src="{{product.image.url}}" alt="product image">
+<!--                                TODO: Get how images are added to form -->
+<!--                                <img src="{{product.image.url}}" alt="product image">-->
+                                <label for="product-image"><img src="{% static '/images/logo.png'%}" alt="Product Image" style="height: 8em; width: auto"></label>
+                                <input type="file" name="image" id="product-image" style="display: none" accept="image/*">
                             </div>
                             <div class="footer">
 
@@ -86,7 +89,8 @@
                             <div class="body">
                                 <select name="category" id="category">
                                     <option value="{{product.category.id}}" selected="selected">
-                                        {{product.category.name}}</option>
+                                        -- SELECT CATEGORY --
+                                    </option>
                                     {% for category in categories %}
                                     <option value="{{category.id}}" {% if category == current_category %} selected="selected" {% endif %}>
                                         {{category.name|capfirst}}
@@ -105,7 +109,7 @@
                                 <h4>Verify that all fields are correct</h4>
                             </div>
                             <div class="body">
-                                <p>Click on update product above to save changes</p>
+                                <p>Click on Create product above to save the form</p>
                             </div>
                             <div class="footer">
 

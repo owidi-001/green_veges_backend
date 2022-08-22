@@ -12,7 +12,7 @@
     font-family: var(--font-family);
 }
 
-.product-list{
+.product-list {
     width: 100%;
     display: flex;
     align-items: start;
@@ -118,12 +118,15 @@
 .product-links {
     text-align: right;
 }
-.product-links a:nth-child(1){
+
+.product-links a:nth-child(1) {
     color: var(--primaryColor);
 }
-.product-links a:nth-child(2){
+
+.product-links a:nth-child(2) {
     color: var(--redColor);
 }
+
 .product-links a {
     display: inline-block;
     margin-left: 5px;
@@ -143,29 +146,33 @@
 /*    height: auto;*/
 /*}*/
 
-.edit-form-container input,textarea,select{
+.edit-form-container input,
+textarea,
+select {
     width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid var(--secondaryColor);
-  outline: none;
-  background: var(--gradientColor);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid var(--secondaryColor);
+    outline: none;
+    background: var(--gradientColor);
     border-radius: 0.2em;
     margin-top: 0.5em;
-  /*border-bottom: 2px solid var(--primaryColor);*/
+    /*border-bottom: 2px solid var(--primaryColor);*/
 }
 
-.edit-form-container .wrapper{
+.edit-form-container .wrapper {
     background: var(--whiteColor);
     padding: 1em;
     margin-top: 1em;
     border-radius: 0.2em;
 }
-.edit-form-container table{
+
+.edit-form-container table {
     width: 100%;
     /*background: pink;*/
 }
-.edit-form-container table thead th{
+
+.edit-form-container table thead th {
     width: 100%;
     column-span: all;
     /*border-bottom: 1px solid var(--secondaryColor);*/
@@ -173,45 +180,103 @@
     background: var(--lightColor);
     text-align: left;
 }
-.edit-form-container tr{
+
+.edit-form-container tr {
     width: 100%;
 }
-.edit-form-container table:nth-child(1){
+
+.edit-form-container table:nth-child(1) {
     border: 1px solid var(--lightColor);
     padding: 0.5em 0.5em;
 }
-.edit-form-container .table-nav{
+
+.edit-form-container .table-nav {
     padding: 0.2em;
     display: flex;
     align-items: start;
     height: 100%;
     color: var(--secondaryColor);
 }
+
 /* lower table */
-.edit-form-container .wrapper .row{
+.edit-form-container .wrapper .row {
     display: flex;
     align-items: start;
     gap: 2em;
 }
 
-.edit-form-container .wrapper .row .card{
+.edit-form-container .wrapper .row .card {
     padding: 0.5em;
     background: var(--lightColor);
     min-height: 10em;
     min-width: 10em;
 }
 
-.edit-form-container .wrapper .row .card .header{
+.edit-form-container .wrapper .row .card .header {
     padding: 0.5em;
     text-transform: uppercase;
     color: var(--secondaryColor);
 }
 
-.edit-form-container .wrapper .row .card p{
+.edit-form-container .wrapper .row .card p {
     padding: 1em 0.5em;
     font-weight: 200;
 }
 
-.edit-form-container .wrapper .row  img{
-    width: 10em;
+/*.edit-form-container .wrapper .row  img{*/
+/*    width: 10em;*/
+/*}*/
+.edit-form-container .wrapper .row img {
+    height: 8em !important;
+    width: auto;
+}
+
+/* orders */
+.alt-text h4 {
+    color: var(--secondaryColor);
+    font-weight: 400;
+    font-size: 1.2em;
+}
+
+/* orders table */
+table.orders-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.orders-table th{
+    font-weight: 900;
+    color: #ffffff;
+    background: var(--secondaryColor);
+}
+
+table.orders-table th,
+table.orders-table td {
+    text-align: left;
+    padding: 6px 12px;
+    display: table-cell;
+}
+
+table.orders-table tr {
+    margin-bottom: 0.5em;
+}
+
+table.orders-table tr:nth-child(even) {
+    background-color: var(--lightColor);
+}
+
+tr:nth-child(odd) {
+    background-color: var(--whiteColor);
+}
+button[type=submit]{
+    color: var(--gradientColor);
+  font-size: 16px;
+  padding: 12px 35px;
+  border-radius: 0.2em;
+  display: inline-block;
+  /*width: 100%;*/
+  border: 0;
+  outline: 0;
+  background: var(--primaryColor);
+  margin-bottom: 1em;
 }

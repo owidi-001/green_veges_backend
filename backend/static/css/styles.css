@@ -196,7 +196,7 @@ img {
 
 .page-title-box .page-title-right {}
 
-.page-title-box .page-title-right form {
+.page-title-box .page-title-right div {
     display: flex;
     gap: 1em;
 }
@@ -213,7 +213,7 @@ img {
     width: 100%;
 }
 
-.input-group .form-control {
+.form-control {
     position: relative;
     background-color: var(--gradientColor) !important;
     border-color: var(--gradientColor);
@@ -231,7 +231,9 @@ img {
     text-transform: uppercase;
 }
 
-.input-group .input-group-text, div a,input[type=submit] {
+.input-group .input-group-text,
+div a.btn,
+input[type=submit] {
     display: flex;
     align-items: center;
     padding: .45rem .9rem;
@@ -247,7 +249,7 @@ img {
     border-bottom-right-radius: .25em;
 }
 
-form a{
+form a {
     border-radius: .25em;
 }
 

@@ -13,7 +13,7 @@
 			<div class="product-price">${{product.unit_price}}/ <small>piece</small></div>
 			<div class="product-links">
 				<a href="{% url 'product_edit' product.pk %}"><i class="bi bi-pencil-square"></i></a>
-				<a href=""><i class="bi bi-trash"></i></a>
+				<a href="{% url 'product_delete' product.pk %}"><i class="bi bi-trash"></i></a>
 			</div>
 		</div>
 	</div>

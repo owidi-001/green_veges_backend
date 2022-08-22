@@ -10,15 +10,80 @@
             <div class="page-title-right">
                 <div class="d-flex">
                     <a href="javascript: void(0);" class="btn">
-                        <i class="bi bi-contact"></i>
+                        <i class="bi bi-person-lines-fill"></i>
                     </a>
                 </div>
             </div>
         </div>
 
         <!--  contact form or details-->
-        <div class="container">
-            <h2>Contact for help</h2>
+        <div class="container edit-form-container">
+            <form class="edit-form" action="contact" method="post">
+            {% csrf_token %}
+            <div class="container">
+            <h2>Help Center</h2>
+            <br>
+            <div class="wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="2">
+                                <h4>How can we help?</h4>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="table-entry">
+                            <td rowspan="3" class="table-nav">
+                                <h4>General Info</h4>
+                            </td>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td>Subject</td>
+                                        <td>
+                                            <select name="subject" id="subject" required>
+                                                <option value="confused">I'm confused about how something works</option>
+                                                <option value="started">Getting started</option>
+                                                <option value="stuck">Can't accomplish a task</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>What is your question, comment or issue? </td>
+                                        <td>
+                                            <textarea name="description" id="description" cols="30" rows="8"
+                                                placeholder="Please be descriptive" required></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Send us a file, screenshot, or document</td>
+                                    <td><input type="file" name="capture" id="capture"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sender email</td>
+                                        <td>
+                                            <input type="email" class="form-control" name="email" id="email" value="{{request.user.email | lower}}">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <br>
+                    </tbody>
+                </table>
+
+            </div>
+            <br>
+
+            <div class="wrapper">
+<!--                <input type="submit" value="Contact Us" style="background: #23AA49">-->
+                <button type="submit">Contact Us</button>
+            </div>
+    </div>
+        </form>
         </div>
     </main>
 {% endblock main %}

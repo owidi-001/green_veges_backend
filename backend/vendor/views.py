@@ -1,6 +1,11 @@
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
+from product.forms import ProductForm
+from product.forms import ProductUpdateForm
+from product.models import Category
 from product.models import Product
 from product.schema import ProductSchema
 from product.serializer import ProductSerializer
@@ -11,14 +16,10 @@ from rest_framework.views import APIView
 from user.forms import UserCreationForm
 # signup COMPLETE
 from user.forms import UserLoginForm
-from user.views import EmailThead
-from vendor.models import Vendor
-
 from user.models import User
-
-from product.forms import ProductUpdateForm
-
-from product.models import Category
+from user.views import EmailThead
+from vendor.forms import ContactForm
+from vendor.models import Vendor
 
 
 def dashboard_register(request):
@@ -29,10 +30,10 @@ def dashboard_register(request):
     if request.method == 'POST' and form.is_valid():
         user = form.save()
         email_to = form.cleaned_data.get("email")
-        print("Emailing to:", email_to)
+        # print("Emailing to:", email_to)
         scheme = request.build_absolute_uri().split(":")[0]
         path = f"{scheme}://{request.get_host()}/login"
-        print(path)
+        # print(path)
         message = render_to_string("registration_email.html", {
             "email": email_to, "path": path})
         subject = "Registration confirmation"
@@ -68,6 +69,12 @@ def dashboard_login(request):
     return render(request, "vendor/dashboard-login.html", {"title": "Vendor dashboard login"})
 
 
+def dashboard_logout(request):
+    active_users = User.objects.filter(is_active=True).count()
+    return render(request, "vendor/dashboard-analytics.html",
+                  {"title": "Vendor dashboard analytics", "active_users": active_users})
+
+
 def dashboard_analytics(request):
     active_users = User.objects.filter(is_active=True).count()
     return render(request, "vendor/dashboard-analytics.html",
@@ -82,33 +89,117 @@ def dashboard_products(request):
                   {"title": "Vendor dashboard product", "products": products})
 
 
+def dashboard_orders(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
+    orders = [
+
+    ]
+
+    return render(request, "vendor/dashboard-orders.html",
+                  {"title": "Vendor dashboard orders", "orders": orders})
+
+
+def manage_orders(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
+    orders = [
+
+    ]
+
+    return render(request, "vendor/dashboard-orders.html",
+                  {"title": "Vendor dashboard orders", "orders": orders})
+
+
+# product create
+def create_product(request):
+    form: ProductForm = ProductForm(request.POST, request.FILES)
+    categories = Category.objects.all()
+
+    print(request.POST)
+
+    form.image = request.POST["image"]
+
+    if request.POST and form.is_valid():
+        product = form.save(commit=False)
+        product.image = request.FILES
+        product.vendor = get_object_or_404(Vendor, user=request.user)
+
+        product.save()
+        messages.success(request, f"We have successfully added {product.label} to your list!")
+        return redirect('products')
+
+    return render(request, "vendor/product-create.html",
+                  {"errors": form.errors, 'categories': categories, 'current_category': None})
+
+
 # edit product
 def edit_product(request, id):
     product = get_object_or_404(Product, id=id)
-    form = ProductUpdateForm(request.POST)
+    form = ProductUpdateForm(request.POST or None)
     categories = Category.objects.all()
 
-    if form.is_valid():
-        if form.cleaned_data.get("label"):
-            product.label = form.cleaned_data.get("label")
+    # print(request.POST)
+    # print(form.errors)
 
-        if form.cleaned_data.get("price"):
-            product.unit_price = form.cleaned_data.get("price")
+    if request.POST and form.is_valid():
+        label = form.cleaned_data.get('label')
+        unit_price = float(form.cleaned_data.get('unit_price'))
+        quantity = int(form.cleaned_data.get('quantity'))
+        description = form.cleaned_data.get("description")
+        category = request.POST['category']
+        # print(category)
+        product_category = get_object_or_404(Category, id=category)
 
-        if form.cleaned_data.get("description"):
-            product.description = form.cleaned_data.get("description")
+        # Update product
+        if label:
+            product.label = label
 
-        if form.cleaned_data.get("quantity"):
-            product.quantity = form.cleaned_data.get("quantity")
+        if unit_price:
+            product.unit_price = unit_price
+
+        if description:
+            product.description = description
+
+        if quantity:
+            product.quantity = quantity
+
+        if product_category:
+            product.category = product_category
 
         product.save()
-
+        messages.success(request, 'Your product has been updated successfully')
         return redirect('products')
 
-    return render(request, "vendor/product-edit.html", {'product': product, 'categories': categories,'current_category':product.category})
+    return render(request, "vendor/product-edit.html",
+                  {'product': product, 'categories': categories, 'current_category': product.category,
+                   "errors": form.errors})
+
+
+# delete product
+def delete_product(request, id):
+    user = request.user
+    vendor = get_object_or_404(Vendor, user=user)
+    product = get_object_or_404(Product, id=id)
+    if product.vendor == vendor:
+        product.delete()
+        messages.success(request, "Product deleted successfully")
+        return redirect('products')
+    messages.error(request, "The delete operation falied")
+    return redirect('products')
 
 
 def dashboard_contact(request):
+    form = ContactForm(request.POST)
+    print(form.errors)
+    print(request.POST)
+    if request.POST and form.is_valid():
+        email = form.cleaned_data.get("email")
+        subject = form.cleaned_data.get("subject")
+        message = form.cleaned_data.get("message")
+        # Email the admin
+        EmailThead([email, settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
+
+        messages.info(request, "Your message has been received and you'll be contacted shortly")
+        return redirect("contact")
     return render(request, "vendor/dashboard-contact.html",
                   {"title": "Vendor dashboard contact"})
 

@@ -11,32 +11,34 @@ from user.views import EmailThead
 
 from user.models import User
 
+from product.models import Product
+
 
 class Order(models.Model):
-    client = models.OneToOneField(Client, on_delete=models.CASCADE)
+    customer = models.OneToOneField(Client, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=1,
         choices=(
             ("R", "Received"),
-            ("P", "Pending"),
+            ("P", "Processing"),
             ("C", "Cancelled"),
             ("D", "Delivered"),
         ),
-        default="P",
+        default="R",
         db_index=True
     )
-    creation_date = models.DateTimeField(verbose_name='creation date')
-    checked_out = models.BooleanField(default=False, verbose_name='checked out')
-    price = models.IntegerField()
-    rating = models.FloatField(
-        null=True,
-        blank=True,
-    )
+    date = models.DateTimeField(verbose_name='creation date')
+    total = models.IntegerField()
 
     class Meta:
         verbose_name = 'cart'
         verbose_name_plural = 'carts'
-        ordering = ('-creation_date',)
+        ordering = ('-date',)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
 
 class ClientOrder(models.Model):
