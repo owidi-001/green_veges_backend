@@ -1,3 +1,5 @@
+from json import dumps
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -20,6 +22,8 @@ from user.models import User
 from user.views import EmailThead
 from vendor.forms import ContactForm
 from vendor.models import Vendor
+
+from order.models import OrderItem
 
 
 def dashboard_register(request):
@@ -69,16 +73,40 @@ def dashboard_login(request):
     return render(request, "vendor/dashboard-login.html", {"title": "Vendor dashboard login"})
 
 
-def dashboard_logout(request):
-    active_users = User.objects.filter(is_active=True).count()
-    return render(request, "vendor/dashboard-analytics.html",
-                  {"title": "Vendor dashboard analytics", "active_users": active_users})
-
+# def dashboard_logout(request):
+#     active_users = User.objects.filter(is_active=True).count()
+#     return render(request, "vendor/dashboard-analytics.html",
+#                   {"title": "Vendor dashboard analytics", "active_users": active_users})
+#
 
 def dashboard_analytics(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
     active_users = User.objects.filter(is_active=True).count()
+    orders = 0  # Total orders
+    order_stream = 0  # Order for last 30 days
+    customers = 0
+    items_sold = 0
+    # for order in OrderItem.objects.all():
+    #     if order.product.vendor == vendor:
+    #         order_stream += 1
+    chart_label = '% Totals'
+    on_transit = 3
+    cancelled = 4
+    pending = 2
+    completed = 9
+
+    order_stats = [
+        ['Order', chart_label],
+        ['On Transit', on_transit],
+        ['Cancelled', cancelled],
+        ['Pending', pending],
+        ['Completed', completed],
+    ]
+    order_stats = dumps(order_stats)
+    context = {"title": "Vendor dashboard analytics", "active_users": active_users, "order_stream": order_stream,
+               "customers": customers, "items_sold": items_sold, "orders": orders, "order_stats": order_stats}
     return render(request, "vendor/dashboard-analytics.html",
-                  {"title": "Vendor dashboard analytics", "active_users": active_users})
+                  context)
 
 
 def dashboard_products(request):

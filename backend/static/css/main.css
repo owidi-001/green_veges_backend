@@ -280,3 +280,55 @@ button[type=submit]{
   background: var(--primaryColor);
   margin-bottom: 1em;
 }
+
+/* analytics */
+    .analytics .row{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1em;
+    }
+    .analytics .card{
+        padding: 1em;
+    margin-bottom: 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: var(--whiteColor);
+    background-clip: border-box;
+    border: 1px solid var(--lightColor);
+    border-radius: .25rem;
+    }
+    .analytics .tilebox .card-body .card-data{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .analytics h6{
+        text-transform: uppercase !important;
+        font-weight: 700;
+        font-size: .75rem;
+        line-height: 1.1;
+        color: var(--secondaryColor);
+        margin: 10px 0em;
+    }
+    .analytics h2{
+        margin-top: .75rem !important;
+    margin-bottom: .75rem !important;
+        font-weight: 700;
+        font-size: 2em;
+        line-height: 1.1;
+    }
+    .analytics i{
+        font-size: 2rem;
+        opacity: .3;
+    }
+    .text-success{
+        color: var(--primaryColor);
+    }
+    .text-muted{
+        white-space: nowrap !important;
+        color: var(--secondaryColor);
+    }
+/* end analytics */
