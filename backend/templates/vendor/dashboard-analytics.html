@@ -15,7 +15,7 @@
 <!--                            <i class="bi bi-calendar"></i>-->
 <!--                        </span>-->
 <!--                    </div>-->
-                    <a href="javascript: void(0);" class="btn">
+                    <a href="{% url 'analytics' %}" class="btn">
                         <i class="bi bi-arrow-clockwise"></i>
                     </a>
                 </div>
@@ -114,6 +114,15 @@
                 </div>
                 </div>
             </div>
+
+            <!-- Line graph            -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Daily sales</h2>
+
+                    <div id="curve_chart" style="width: 100%; min-height: 500px"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -123,7 +132,7 @@
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
           const order_data = JSON.parse("{{order_stats|escapejs}}");
-          console.log(order_data)
+          // console.log(order_data)
           const data = google.visualization.arrayToDataTable(order_data);
 
           const options = {
@@ -136,4 +145,26 @@
       }
     </script>
 
+<!-- line graph chart -->
+<script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+          var sales_data=JSON.parse("{{daily_sales |escapejs}}")
+        var data = google.visualization.arrayToDataTable(sales_data);
+
+        var options = {
+          title: 'Vendor Performance',
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
 {% endblock main %}
+

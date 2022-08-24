@@ -4,7 +4,7 @@
 {% block main %}
 <main>
     <!-- page Title -->
-    <form class="edit-form" action="{% url 'create_product' %}" method="post">
+    <form class="edit-form" action="{% url 'create_product' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
     <div class="page-title-box">
         <h4 class="page-title">Create Product</h4>
@@ -73,8 +73,8 @@
                             <div class="body">
 <!--                                TODO: Get how images are added to form -->
 <!--                                <img src="{{product.image.url}}" alt="product image">-->
-                                <label for="product-image"><img src="{% static '/images/logo.png'%}" alt="Product Image" style="height: 8em; width: auto"></label>
-                                <input type="file" name="image" id="product-image" style="display: none" accept="image/*">
+                                <label for="image"><img src="{% static '/images/logo.png'%}" alt="Product Image" style="height: 8em; width: auto"></label>
+                                <input type="file" name="image" id="image" style="display: none" accept="image/*">
                             </div>
                             <div class="footer">
 

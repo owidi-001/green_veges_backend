@@ -19,13 +19,14 @@
     justify-content: start;
     flex-wrap: wrap;
     gap: 1em;
-    background: pink;
+    background: var(--whiteColor);
+    border-radius: 0.2em;
 }
 
 .product-card {
     width: 380px;
     position: relative;
-    box-shadow: 0 2px 7px #dfdfdf;
+    /*box-shadow: 0 2px 7px #dfdfdf;*/
     margin: 50px auto;
     background: #fafafa;
 }
@@ -88,6 +89,12 @@
     line-height: 22px;
     margin-bottom: 18px;
     color: #999;
+/*    TODO: Set to max display 1 line*/
+/*    line-height: 24px;*/
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
 }
 
 .product-bottom-details {

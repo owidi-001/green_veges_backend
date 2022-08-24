@@ -4,7 +4,7 @@
 {% block main %}
 <main>
     <!-- page Title -->
-    <form class="edit-form" action="{% url 'product_edit' product.id %}" method="post">
+    <form class="edit-form" action="{% url 'product_edit' product.id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
     <div class="page-title-box">
         <h4 class="page-title">Edit Product</h4>
@@ -71,7 +71,9 @@
                                 <h4>Product Image</h4>
                             </div>
                             <div class="body">
-                                <img src="{{product.image.url}}" alt="product image">
+<!--                                <img src="{{product.image.url}}" alt="product image">-->
+                                <label for="product-image"><img src="{{product.image.url}}" alt="Product Image" style="height: 8em; width: auto"></label>
+                                <input type="file" name="image" id="product-image" style="display: none" accept="image/*">
                             </div>
                             <div class="footer">
 

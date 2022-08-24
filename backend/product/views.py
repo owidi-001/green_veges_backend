@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import ProductUpdateForm
+from .forms import  ProductForm
 from .models import Product
 from .schema import ProductSchema
 from .serializer import ProductSerializer
@@ -38,7 +38,7 @@ class ProductView(APIView):
         return Response(serializer.data)
 
     def put(self, request):
-        form = ProductUpdateForm(request.data)
+        form = ProductForm(request.data)
 
         if form.is_valid():
             product = get_object_or_404(Product, id=request.data.get("product_id"))
