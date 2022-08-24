@@ -240,18 +240,29 @@ def delete_product(request, id):
 
 
 def dashboard_contact(request):
-    form = ContactForm(request.POST)
-    print(form.errors)
-    print(request.POST)
+    form = ContactForm(request.POST, request.FILES)
+    vendor = get_object_or_404(Vendor, user=request.user)
+
+    # print(form.errors)
+    # print(request.POST)
+
     if request.POST and form.is_valid():
-        email = form.cleaned_data.get("email")
+        contact = form.save(commit=False)
+        contact.vendor = vendor
+
+        if form.cleaned_data.get("email"):
+            email = form.cleaned_data.get("email")
+        else:
+            email = vendor.user.email
+
         subject = form.cleaned_data.get("subject")
         message = form.cleaned_data.get("message")
+
         # Email the admin
-        EmailThead([email, settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
+        EmailThead([settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
 
         messages.info(request, "Your message has been received and you'll be contacted shortly")
-        return redirect("contact")
+        return redirect("analytics")
     return render(request, "vendor/dashboard-contact.html",
                   {"title": "Vendor dashboard contact"})
 

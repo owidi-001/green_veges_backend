@@ -9,3 +9,10 @@ class Vendor(models.Model):
 
     def __str__(self):
         return self.user.email
+
+
+class HelpMessage(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.PROTECT)
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', null=True, blank=True)

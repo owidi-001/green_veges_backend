@@ -1,8 +1,9 @@
 from django import forms
 
+from vendor.models import HelpMessage
 
-class ContactForm(forms.Form):
-    subject = forms.CharField(max_length=200)
-    message = forms.Textarea()
-    email = forms.EmailField()
 
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = HelpMessage
+        fields = ['subject', "message", "upload"]
