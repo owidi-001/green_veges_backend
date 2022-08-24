@@ -20,36 +20,36 @@ class Order(models.Model):
         max_length=1,
         choices=(
             ("R", "Received"),
-            ("P", "Processing"),
+            ("O", "In Progress"),
             ("C", "Cancelled"),
-            ("D", "Delivered"),
+            ("F", "Fulfilled"),
         ),
         default="R",
         db_index=True
     )
-    date = models.DateTimeField(verbose_name='creation date')
+    date = models.DateTimeField(verbose_name='creation date',auto_created=timezone.now())
     total = models.IntegerField()
 
     class Meta:
-        verbose_name = 'cart'
-        verbose_name_plural = 'carts'
+        verbose_name = 'order'
+        verbose_name_plural = 'orders'
         ordering = ('-date',)
 
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-
-class ClientOrder(models.Model):
-    client = models.OneToOneField(Client, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ("order", "client")
-
-    def __str__(self) -> str:
-        return f"{self.client.user.email} :{self.order}"
+    status = models.CharField(
+        max_length=1,
+        choices=(
+            ("R", "Received"),
+            ("T", "On Transit"),
+            ("D", "Delivered"),
+            ("C", "Cancelled"),
+        ),
+        default="R",
+        db_index=True
+    )
 
 
 class Feedback(models.Model):
@@ -67,18 +67,18 @@ class Feedback(models.Model):
 
 
 # send notification when the order is delivered
-@receiver(post_save, sender=ClientOrder)
+@receiver(post_save, sender=Order)
 def send_customer_notification(sender=None, instance=None, created=False, **kwargs):
     try:
         if instance.status == "F":
-            clients = ClientOrder.objects.filter(
+            clients = OrderItem.objects.filter(
                 order=instance.order, status="D"
             )
             message = "You delivery has arrived"
 
             # email notification
             EmailThead(
-                [item.customer.email for item in clients] +
+                [item.order.customer.email for item in clients] +
                 [settings.EMAIL_HOST_USER], message
             )
 

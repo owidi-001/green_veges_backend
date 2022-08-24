@@ -22,6 +22,10 @@ from user.views import EmailThead
 from vendor.forms import ContactForm
 from vendor.models import Vendor
 
+from order.models import Order
+
+from order.models import OrderItem
+
 
 def dashboard_register(request):
     form = UserCreationForm(request.POST)
@@ -139,22 +143,31 @@ def dashboard_products(request):
 
 def dashboard_orders(request):
     vendor = get_object_or_404(Vendor, user=request.user)
-    orders = [
-
-    ]
+    # order_items = OrderItem.objects.filter(product.vendor == vendor)
+    order_items = OrderItem.objects.all()
+    orders = []
+    for order_item in order_items:
+        if order_item.product.vendor == vendor:
+            if order_item.order not in orders:
+                orders.append(order_item.order)
 
     return render(request, "vendor/dashboard-orders.html",
                   {"title": "Vendor dashboard orders", "orders": orders})
 
 
-def manage_orders(request):
+def manage_orders(request, id):
     vendor = get_object_or_404(Vendor, user=request.user)
-    orders = [
+    order = get_object_or_404(Order, id=id)
+    order_items = OrderItem.objects.filter(order=order)
 
-    ]
+    orders = []
 
-    return render(request, "vendor/dashboard-orders.html",
-                  {"title": "Vendor dashboard orders", "orders": orders})
+    for order_item in order_items:
+        if order_item.product.vendor == vendor:
+            orders.append(order_item)
+
+    return render(request, "vendor/manage-orders.html",
+                  {"title": "Manage orders", "order_items": order_items})
 
 
 # product create
