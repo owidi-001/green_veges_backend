@@ -13,15 +13,15 @@ def upload(instance, filename):
 
 
 class User(AbstractUser):
-    # first_name = models.CharField(max_length=30, blank=False, unique=True)
-    # last_name = models.CharField(max_length=30, blank=False, unique=True)
+    first_name = models.CharField(max_length=30, blank=True, unique=False)
+    last_name = models.CharField(max_length=30, blank=True, unique=False)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(
         max_length=13, null=False, blank=False, unique=True)
     is_vendor = models.BooleanField(default=False, blank=True)
     username = None
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["first_name", "last_name", "phone_number"]
+    REQUIRED_FIELDS = ["phone_number"]
     objects = UserManager()
 
     def __str__(self) -> str:

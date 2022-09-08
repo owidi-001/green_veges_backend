@@ -177,3 +177,39 @@ body {
 .box-form .right p.auth-link a {
   color: var(--primaryColor);
 }
+
+/* alert messages */
+.messages-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.messages-container .messages{
+    width: 40%;
+    max-height: 20em;
+    background: var(--primaryColor);
+  color: var(--whiteColor);
+    position: absolute;
+  top: 1em;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  border-radius: 1em;
+
+
+}
+.messages-container li{
+  counter-increment: index;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.2em;
+  box-sizing: border-box;
+}
+
+/* Element separation */
+li + li {
+  border-top: 1px solid rgba(255,255,255,0.2);
+}

@@ -8,8 +8,6 @@ class RegistrationSchema(AutoSchema):
         extra_fields = []
         if method.lower() == "post":
             extra_fields = [
-                coreapi.Field("first_name", required=True, location="form"),
-                coreapi.Field("last_name", required=True, location="form"),
                 coreapi.Field(
                     "email", required=True, location="form", schema=coreschema.String()
                 ),

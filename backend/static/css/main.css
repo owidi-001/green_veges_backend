@@ -339,3 +339,23 @@ button[type=submit]{
         color: var(--secondaryColor);
     }
 /* end analytics */
+
+/* alert messages */
+.messages-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.messages{
+    width: 40%;
+    max-height: 20em;
+    background: pink;
+    position: absolute;
+  top: 1em;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em;
+  border-radius: 1em;
+}

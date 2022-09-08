@@ -29,34 +29,51 @@ from order.models import OrderItem
 
 def dashboard_register(request):
     form = UserCreationForm(request.POST)
-    # if not form.is_valid():
-    #     print(form.errors)
+    if not form.is_valid():
+        print(form.errors)
 
-    if request.method == 'POST' and form.is_valid():
-        user = form.save()
-        email_to = form.cleaned_data.get("email")
-        # print("Emailing to:", email_to)
-        scheme = request.build_absolute_uri().split(":")[0]
-        path = f"{scheme}://{request.get_host()}/login"
-        # print(path)
-        message = render_to_string("registration_email.html", {
-            "email": email_to, "path": path})
-        subject = "Registration confirmation"
+    if request.method == 'POST':
+        if form.is_valid():
+            user = form.save()
+            email_to = form.cleaned_data.get("email")
+            # print("Emailing to:", email_to)
+            scheme = request.build_absolute_uri().split(":")[0]
+            path = f"{scheme}://{request.get_host()}/login"
+            # print(path)
+            message = render_to_string("registration_email.html", {
+                "email": email_to, "path": path})
+            subject = "Registration confirmation"
 
-        EmailThead([email_to], message, subject).start()
+            EmailThead([email_to], message, subject).start()
 
-        try:
-            username = form.cleaned_data.get("email")
-            password = form.cleaned_data.get("password1")
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-            return redirect("analytics")
-        except:
-            return redirect('login')
-    else:
-        return render(request, "vendor/dashboard-register.html",
-                      {"title": "Vendor dashboard register", "errors": form.errors})
+            try:
+                username = form.cleaned_data.get("email")
+                password = form.cleaned_data.get("password1")
+
+                # Create vendor instance to login
+                Vendor.objects.get_or_create(user=user)
+
+                user = authenticate(username=username, password=password)
+
+                print(f"user:{user}")
+
+                if user:
+                    login(request, user)
+                    return redirect("analytics")
+                else:
+                    messages.info(request, "Account created, login to start")
+                    return redirect('login')
+            except:
+                print("User not authenticated")
+                messages.info(request, "Login failed")
+                pass
+
+        else:
+            messages.error(request, form.errors)
+            return render(request, "vendor/dashboard-register.html",
+                          {"title": "Vendor dashboard register", "errors": form.errors})
+    return render(request, "vendor/dashboard-register.html",
+                  {"title": "Vendor dashboard register"})
 
 
 def dashboard_login(request):
@@ -64,8 +81,8 @@ def dashboard_login(request):
     if request.POST and form.is_valid():
         username = form.cleaned_data.get('email')
         password = form.cleaned_data.get('password')
-        print(username)
-        print(password)
+        # print(username)
+        # print(password)
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)

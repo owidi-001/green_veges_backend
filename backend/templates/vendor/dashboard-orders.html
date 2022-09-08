@@ -38,7 +38,7 @@
                     <td># {{order.id}} {{order.customer.first_name|capfirst}} {{order.customer.last_name|capfirst}}</td>
                     <td>{{order.date}}</td>
                     <td>{{order.status}}</td>
-                    <td>{{order.customer.email}}</td>
+                    <td>{{order.customer.user.email}}</td>
                     <td>$ {{order.total}}</td>
                     <td>
                         <a href="{% url 'manage_orders' order.id%}"> <i class="bi bi-bag-fill"></i> Manage Order</a>
