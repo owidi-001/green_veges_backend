@@ -1,0 +1,32 @@
+TODO
+
+# USER
+DONE: Register
+DONE: Login
+DONE: Update
+Password reset
+Password Change
+
+
+# Vendor
+DONE: CRUD ? SUCCESSFUL : MAKE IT WORK
+DONE: Create new product
+DONE: Update personal product
+DONE: View Personal products
+DONE: Delete personal products
+
+
+#Client
+DONE: View all products
+
+#Order
+ Relate to client
+ 
+ ## Frontend job // Define backend cart with product items + summary(sum,quantity etc)
+ Create Cart
+ products to cart
+ 
+Checkout 
+ 
+
+
