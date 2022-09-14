@@ -107,22 +107,13 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 import dj_database_url
 
-print(f"The development is {type(os.getenv('DEVELOPMENT'))}")
-
-if os.getenv('DEVELOPMENT') == "False":
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': '/home/owidi/db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
+DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
