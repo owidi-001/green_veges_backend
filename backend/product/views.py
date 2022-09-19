@@ -6,10 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .forms import  ProductForm
-from .models import Product
+from .forms import ProductForm
+from .models import Product, Category
 from .schema import ProductSchema
-from .serializer import ProductSerializer
+from .serializer import ProductSerializer, CategorySerializer
 
 # class views
 from vendor.models import Vendor
@@ -74,3 +74,19 @@ class ProductView(APIView):
             return Response({"message": "Product deleted"})
         else:
             return Response({"message": "Only the vendor can delete this product"})
+
+
+class CategoryView(APIView):
+    """
+    List all categories
+    """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    """ Returns all available products """
+
+    def get(self, request):
+        categories = Category.objects.all()
+
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
