@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 # from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -81,9 +81,9 @@ class CategoryView(APIView):
     List all categories
     """
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
-    """ Returns all available products """
+    """ Returns all available categories """
 
     def get(self, request):
         categories = Category.objects.all()

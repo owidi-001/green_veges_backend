@@ -11,7 +11,7 @@ from product.models import Product
 from product.schema import ProductSchema
 from product.serializer import ProductSerializer
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from user.forms import UserCreationForm
@@ -25,6 +25,8 @@ from vendor.models import Vendor
 from order.models import Order
 
 from order.models import OrderItem
+
+from vendor.serializers import VendorSerializer
 
 
 def dashboard_register(request):
@@ -300,15 +302,17 @@ def dashboard_contact(request):
 class VendorViews(APIView):
     """ Vendor dashboard functions: list, create, update, delete for products"""
 
-    schema = ProductSchema()
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     """ Gets a list of all products belonging to the vendor """
 
     def get(self, request):
-        vendor = get_object_or_404(Vendor, user=request.user)
-        products = Product.objects.filter(vendor=vendor)
-
-        serializer = ProductSerializer(products, many=True)
+        # vendor = get_object_or_404(Vendor, user=request.user)
+        # products = Product.objects.filter(vendor=vendor)
+        #
+        # serializer = ProductSerializer(products, many=True)
+        # return Response(serializer.data)
+        vendors = Vendor.objects.all()
+        serializer = VendorSerializer(vendors, many=True)
         return Response(serializer.data)

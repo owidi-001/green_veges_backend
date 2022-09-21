@@ -3,7 +3,7 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from .views import dashboard_register, dashboard_login, dashboard_analytics, dashboard_products, dashboard_contact, \
-    edit_product, create_product, dashboard_orders, manage_orders, delete_product
+    edit_product, create_product, dashboard_orders, manage_orders, delete_product, VendorViews
 
 urlpatterns = [
     path("logout/", LogoutView.as_view(), {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),
@@ -17,5 +17,7 @@ urlpatterns = [
     path("orders", dashboard_orders, name="orders"),
     path("orders/<int:id>/manage", manage_orders, name="manage_orders"),
     path("contact", dashboard_contact, name="contact"),
-    # path("vendor/", VendorViews.as_view(), name="vendor"),
+
+    # Vendor api for app
+    path("vendors/", VendorViews.as_view(), name="vendor"),
 ]
