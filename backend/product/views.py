@@ -12,7 +12,6 @@ from .schema import ProductSchema
 from .serializer import ProductSerializer, CategorySerializer
 
 # class views
-from vendor.models import Vendor
 
 
 class ProductView(APIView):
@@ -28,11 +27,11 @@ class ProductView(APIView):
     """ Returns all available products """
 
     def get(self, request):
-        vendor = get_object_or_404(Vendor, user=request.user)
-        if vendor:
-            products = Product.objects.filter(vendor=vendor)
-        else:
-            products = Product.objects.all()
+        # vendor = get_object_or_404(Vendor, user=request.user)
+        # if vendor:
+        #     products = Product.objects.filter(vendor=vendor)
+        # else:
+        products = Product.objects.all()
 
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)

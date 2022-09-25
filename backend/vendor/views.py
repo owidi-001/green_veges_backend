@@ -308,11 +308,7 @@ class VendorViews(APIView):
     """ Gets a list of all products belonging to the vendor """
 
     def get(self, request):
-        # vendor = get_object_or_404(Vendor, user=request.user)
-        # products = Product.objects.filter(vendor=vendor)
-        #
-        # serializer = ProductSerializer(products, many=True)
-        # return Response(serializer.data)
         vendors = Vendor.objects.all()
+        vendors = [vendor for vendor in vendors if vendor.brand is not None]
         serializer = VendorSerializer(vendors, many=True)
         return Response(serializer.data)

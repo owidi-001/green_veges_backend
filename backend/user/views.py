@@ -209,7 +209,7 @@ class UserProfileView(APIView):
         form = UserUpdateForm(request.data)
 
         if form.is_valid():
-            user = get_object_or_404(User, username=request.user.username)
+            user = get_object_or_404(User, token=request.token)
 
             print("User retrieved", user.email)
 
@@ -234,7 +234,7 @@ class UserProfileView(APIView):
 
             try:
                 user.save()
-                print("Client saved")
+                print("User saved")
 
             except:
                 print(user)
