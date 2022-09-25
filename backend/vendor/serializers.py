@@ -7,4 +7,4 @@ from vendor.models import Vendor
 class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
-        fields = ["user", "brand", "tagline", "logo"]
+        fields = ["id", "user", "brand", "tagline", "logo"]
