@@ -14,21 +14,31 @@ from user.models import User
 from product.models import Product
 
 
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    lat = models.FloatField()
+    long = models.FloatField()
+    floor_number = models.IntegerField(blank=True, null=True)
+    door_number = models.IntegerField(blank=True, null=True)
+
+
 class Order(models.Model):
-    customer = models.OneToOneField(Client, on_delete=models.CASCADE)
+    customer = models.OneToOneField(User, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=1,
         choices=(
-            ("R", "Received"),
+            ("P", "Pending"),
             ("O", "In Progress"),
             ("C", "Cancelled"),
             ("F", "Fulfilled"),
         ),
-        default="R",
+        default="P",
         db_index=True
     )
-    date = models.DateTimeField(verbose_name='creation date',auto_created=timezone.now())
+    date = models.DateTimeField(verbose_name='order date', auto_created=timezone.now())
     total = models.IntegerField()
+    delivery_address = models.ForeignKey(Address, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'order'
@@ -39,6 +49,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
     status = models.CharField(
         max_length=1,
         choices=(
