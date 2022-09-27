@@ -29,6 +29,7 @@ urlpatterns = [
     path('vendor/', include('vendor.urls')),
     path('', include('client.urls')),
     path('', include('product.urls')),
+    path('', include('order.urls')),
 
     # Documentation
     path('', include_docs_urls(title="Green Veges API")),
