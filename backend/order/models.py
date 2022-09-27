@@ -16,17 +16,18 @@ from product.models import Product
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default="Un named")
     lat = models.FloatField()
     long = models.FloatField()
     floor_number = models.IntegerField(blank=True, null=True)
-    door_number = models.IntegerField(blank=True, null=True)
+    door_number = models.CharField(max_length=10, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name}"
 
+
 class Order(models.Model):
-    customer = models.OneToOneField(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(
         max_length=1,
         choices=(
@@ -38,7 +39,7 @@ class Order(models.Model):
         default="P",
         db_index=True
     )
-    date = models.DateTimeField(verbose_name='order date', auto_created=timezone.now())
+    date = models.DateTimeField(verbose_name='order date', auto_now_add=True)
     total = models.IntegerField()
     delivery_address = models.ForeignKey(Address, null=True, on_delete=models.CASCADE)
 
@@ -77,6 +78,7 @@ class Feedback(models.Model):
         Order, on_delete=models.CASCADE, default=None)
     message = models.TextField()
     created_on = models.DateTimeField(auto_created=True, default=timezone.now)
+    rating = models.IntegerField(default=1)
 
     class Meta:
         verbose_name_plural = "Feedback"
@@ -93,7 +95,7 @@ def send_customer_notification(sender=None, instance=None, created=False, **kwar
             clients = OrderItem.objects.filter(
                 order=instance.order, status="D"
             )
-            message = "You delivery has arrived"
+            message = "Delivery has arrived."
 
             # email notification
             EmailThead(
