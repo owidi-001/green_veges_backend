@@ -22,6 +22,8 @@ class Address(models.Model):
     floor_number = models.IntegerField(blank=True, null=True)
     door_number = models.IntegerField(blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.name}"
 
 class Order(models.Model):
     customer = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -61,6 +63,12 @@ class OrderItem(models.Model):
         default="R",
         db_index=True
     )
+
+    def get_total(self):
+        return self.product.unit_price * self.quantity
+
+    def __str__(self):
+        return f"Order:{self.order}, Name: {self.product.label}, Quantity:{self.quantity}, Total:{self.get_total()}"
 
 
 class Feedback(models.Model):

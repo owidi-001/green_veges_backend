@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import OrderItem, Order, Feedback
+from .models import OrderItem, Order, Feedback, Address
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -7,6 +7,12 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ["date", "status", "customer"]
 
 
-admin.site.register(Order,OrderAdmin)
-admin.site.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ["order", "product", "quantity", "status", "get_total"]
+    list_filter = ["order", "product", "status"]
+
+
+admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem, OrderItemAdmin)
+admin.site.register(Address)
 admin.site.register(Feedback)
