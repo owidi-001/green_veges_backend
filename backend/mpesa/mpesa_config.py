@@ -1,10 +1,6 @@
-import environ
-
-# Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
-
 # Hidden keys and configs
+from backend.settings import env
+
 class MpesaConfig:
     CONSUMER_KEY = env('CONSUMER_KEY')
     CONSUMER_SECRET = env('CONSUMER_SECRET')

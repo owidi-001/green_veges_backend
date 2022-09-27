@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'product',
     'client',
     'vendor',
-    'order'
+    'order',
+    'mpesa'
 ]
 
 # rest framework documentation
