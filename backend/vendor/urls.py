@@ -2,8 +2,8 @@ from django.conf import settings
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from .views import dashboard_register, dashboard_login, dashboard_analytics, dashboard_products, dashboard_contact, \
-    edit_product, create_product, dashboard_orders, manage_orders, delete_product, VendorViews
+from .views import (dashboard_register, dashboard_login, dashboard_analytics, dashboard_products, dashboard_contact, \
+    edit_product, create_product, dashboard_orders, manage_orders, delete_product, VendorViews)
 
 urlpatterns = [
     path("logout/", LogoutView.as_view(), {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),

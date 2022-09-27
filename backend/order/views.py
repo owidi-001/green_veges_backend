@@ -1,3 +1,6 @@
+from threading import Thread
+
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -9,7 +12,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 # Create your views here.
 from rest_framework.views import APIView
-from user.models import User, EmailThead
+from user.models import User
+
+
+class EmailThead(Thread):
+    def __init__(self, email_to, message, subject):
+        super().__init__()
+        self.email_to = email_to
+        self.message = message
+        self.subject = subject
+
+    def run(self):
+        send_mail(self.message, self.email_to, self.subject)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
