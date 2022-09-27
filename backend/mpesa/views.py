@@ -11,8 +11,9 @@ from .models import MpesaPayment
 
 from .mpesa_config import MpesaConfig as config
 from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPassword
+from backend.settings import env
 
-BASE_URL = ""  # Ngrok server:port # Change to courier heroku: Basic Idea is it can't run locally
+BASE_URL = env('BASE_SERVER_URL')
 
 
 # shipment
