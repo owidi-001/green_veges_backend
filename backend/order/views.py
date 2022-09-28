@@ -19,7 +19,7 @@ from rest_framework.views import APIView
 
 from order.forms import FeedbackGetForm
 
-from backend.product.models import Product
+from product.models import Product
 
 
 class EmailThead(Thread):
