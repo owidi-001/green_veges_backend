@@ -19,6 +19,8 @@ from rest_framework.views import APIView
 
 from order.forms import FeedbackGetForm
 
+from backend.product.models import Product
+
 
 class EmailThead(Thread):
     def __init__(self, email_to, message, subject):
@@ -128,21 +130,34 @@ class OrderItemView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        order_item = get_object_or_404(OrderItem, id=request.order_item)
+        orders = Order.objects.filter(customer=request.user)
 
-        if order_item:
-            data = OrderItemSerializer(order_item).data
+        items = []
+        for order in orders:
+            order_items = OrderItem.objects.filter(order=order)
+            items += order_items
 
-            return Response(data, status=200)
-        return Response({"errors": ["order item not loaded"]}, status=400)
+        data = OrderItemSerializer(items, many=True).data
+
+        return Response(data, status=200)
 
     # Create new order item
     def post(self, request):
         form = OrderItemForm(request.data)
         if form.is_valid():
-            order_item = form.save()
-            data = OrderItemSerializer(order_item).data
-            return Response(data, status=200)
+            order = form.cleaned_data.get("order")
+            product = form.cleaned_data.get("product")
+            quantity = form.cleaned_data.get("quantity")
+
+            product = get_object_or_404(Product, id=product)
+            order = get_object_or_404(Order, id=order)
+
+            order_item = OrderItem.objects.create(order=order, product=product, quantity=quantity)
+            if order_item:
+                order_item.save()
+                data = OrderItemSerializer(order_item).data
+                return Response(data, status=200)
+        print(form.errors)
         return Response({"errors": ["Failed to create place order"]}, status=400)
 
     # Update order when payment is done
@@ -168,6 +183,7 @@ class OrderItemView(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class AddressView(APIView):
     """
+
     Perform crud on user addresses
     """
     schema = AddressSchema()
@@ -244,7 +260,6 @@ class FeedbackView(APIView):
         form = FeedbackGetForm(request.data)
         print(form.is_valid())
         if form.is_valid():
-
             order = get_object_or_404(Order, id=form.cleaned_data.get("order"))
             feedbacks = Feedback.objects.filter(order=order)
 

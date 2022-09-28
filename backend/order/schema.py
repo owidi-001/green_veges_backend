@@ -47,11 +47,11 @@ class OrderItemSchema(AutoSchema):
         if method.upper() == "POST":
             extra_fields = [
                 coreapi.Field("order", required=True, location="form", example="1",
-                              schema=coreschema.Object(required=True, description="Order in which this item belongs")),
+                              schema=coreschema.Integer(description="Order in which this item belongs")),
                 coreapi.Field("product", required=True, location="form", example="1",
-                              schema=coreschema.Object(required=True, description="Product id for this order item")),
+                              schema=coreschema.Integer(description="Product id for this order item")),
                 coreapi.Field("quantity", required=False, location="form", example="2",
-                              schema=coreschema.Object(required=True, description="Enter quantity available")),
+                              schema=coreschema.Number(description="Enter quantity available")),
             ]
 
         elif method.upper() == "PUT":
