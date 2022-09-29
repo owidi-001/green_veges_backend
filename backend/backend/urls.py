@@ -25,15 +25,15 @@ from rest_framework.documentation import include_docs_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', include('user.urls')),
-    path('vendor/', include('vendor.urls')),
-    path('', include('client.urls')),
-    path('', include('product.urls')),
-    path('', include('order.urls')),
+    path('auth/', include('user.urls')),
+    path('', include('vendor.urls')),
+    path('clients/', include('client.urls')),
+    path('products/', include('product.urls')),
+    path('orders/', include('order.urls')),
     # path('', include('mpesa.urls')),
 
     # Documentation
-    path('', include_docs_urls(title="Green Veges API")),
+    path('api/v1', include_docs_urls(title="Green Veges API")),
 ]
 
 if settings.DEBUG:

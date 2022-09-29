@@ -14,7 +14,7 @@ urlpatterns = [
     path("products/new", create_product, name="create_product"),
     path("products/<int:id>/edit", edit_product, name="product_edit"),
     path("products/<int:id>/delete", delete_product, name="product_delete"),
-    path("orders", dashboard_orders, name="orders"),
+    path("vendor/orders", dashboard_orders, name="vendor_orders"),
     path("orders/<int:id>/manage", manage_orders, name="manage_orders"),
     path("contact", dashboard_contact, name="contact"),
 

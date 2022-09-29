@@ -1,3 +1,4 @@
+import datetime
 from json import dumps
 
 from django.conf import settings
@@ -133,16 +134,43 @@ def dashboard_analytics(request):
 
     daily_sales = [
         ['Day', 'Daily Sales'],
-        ['2004', 1000],
-        ['2005', 1170],
-        ['2006', 660],
-        ['2005', 1170],
-        ['2006', 660],
-        ['2007', 1030],
-        ['2007', 1030],
-        ['2007', 1030],
-        ['2007', 1030],
+        # ['2004', 1000],
+        # ['2005', 1170],
+        # ['2006', 660],
+        # ['2005', 1170],
+        # ['2006', 660],
+        # ['2007', 1030],
+        # ['2007', 1030],
+        # ['2007', 1030],
+        # ['2007', 1030],
     ]
+
+    from datetime import date
+    from datetime import timedelta
+    today = date.today()  # or you can do today = date.today() for today's date
+
+    sales_date = []
+
+    for i in range(0, 10):
+        sales_date.append(today - timedelta(days=i))
+
+    from django.utils import timezone as tz
+    d = tz.now() - datetime.timedelta(days=10)
+
+    order_items = OrderItem.objects.filter(timestamp__lt=d)
+    vendor_products = Product.objects.filter(vendor=vendor)
+
+    daily_sales_total = []
+
+    for item in order_items:
+        if item.product in vendor_products:
+            daily_totals=0
+            # Get total order price
+            daily_sales_total.append(item.product.unit_price * item.quantity)
+
+    # Add the data to daily sales for display
+    daily_sales.append(zip(sales_date, daily_sales_total))
+
     daily_sales = dumps(daily_sales)
     context = {"title": "Vendor dashboard analytics", "active_users": active_users, "order_stream": order_stream,
                "customers": customers, "items_sold": items_sold, "orders": orders, "order_stats": order_stats,
