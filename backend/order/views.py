@@ -58,7 +58,6 @@ class OrderView(APIView):
 
         if form.is_valid():
             order = form.save(commit=False)
-
             order.customer = request.user
             order.save()
 
@@ -183,7 +182,6 @@ class OrderItemView(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class AddressView(APIView):
     """
-
     Perform crud on user addresses
     """
     schema = AddressSchema()

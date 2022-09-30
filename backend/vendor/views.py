@@ -1,18 +1,20 @@
 import datetime
 from json import dumps
+from collections import defaultdict
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
+from django.utils import timezone
+from order.models import Order
+from order.models import OrderItem
 from product.forms import ProductForm
 from product.models import Category
 from product.models import Product
-from product.schema import ProductSchema
-from product.serializer import ProductSerializer
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from user.forms import UserCreationForm
@@ -22,11 +24,6 @@ from user.models import User
 from user.views import EmailThead
 from vendor.forms import ContactForm
 from vendor.models import Vendor
-
-from order.models import Order
-
-from order.models import OrderItem
-
 from vendor.serializers import VendorSerializer
 
 
@@ -84,13 +81,12 @@ def dashboard_login(request):
     if request.POST and form.is_valid():
         username = form.cleaned_data.get('email')
         password = form.cleaned_data.get('password')
-        # print(username)
-        # print(password)
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
             return redirect('analytics')
-
+    else:
+        print(form.errors)
     return render(request, "vendor/dashboard-login.html", {"title": "Vendor dashboard login"})
 
 
@@ -101,77 +97,112 @@ def dashboard_login(request):
 #
 
 def formulate_daily_sales() -> list:
-    pass
+    """ Initialize daily sales """
+    daily_sales = [
+        ['Day', 'Daily Sales'],
+    ]
+
+    """Create sales date list"""
+    sales_date = []
+    for i in range(0, 10):
+        sales_date.append(str((timezone.now() - datetime.timedelta(days=i)).date()))
+
+    """ Calculate daily totals """
+    # Vendors last 10 days sales
+    vendor_recent_sales = OrderItem.objects.filter(timestamp__lt=timezone.now() - datetime.timedelta(days=10))
+
+    # Daily sales grouping for the lists of items sold in a day
+    # Group orderItems as per dates
+    vendor_daily_sales_items = defaultdict(list)
+
+    for item in vendor_recent_sales:
+        vendor_daily_sales_items[item['timestamp']].append(item)
+
+    # Sum of each order item made per day in the last x days
+    daily_sales_totals = []
+
+    for i in range(len(sales_date)):
+        daily_sum = 0
+        try:
+            days_list = vendor_daily_sales_items[vendor_daily_sales_items.keys()[i]]
+            if days_list is not None or len(days_list) > 0:
+                items_totals = [x.get_total() for x in days_list]
+                # Get total order price
+                daily_sum = sum(items_totals)
+        except:
+            # less vendor products
+            pass
+        daily_sales_totals.append(daily_sum)
+
+    # Combine the two list for serialization
+    data = list(zip(sales_date, daily_sales_totals))
+
+    data_to_list = []
+    for item in data:
+        item = list(item)
+        data_to_list.append(item)
+
+    # Combine the list generated to the original for serialization
+    daily_sales += data_to_list
+
+    return daily_sales
 
 
-def dashboard_analytics(request):
-    vendor = get_object_or_404(Vendor, user=request.user)
-    active_users = User.objects.filter(is_active=True).count()
+def formulate_vendors_order_status(vendor) -> list:
+    chart_label = 'Status % Totals'
 
-    orders = 0  # Total orders
-    order_stream = 0  # Order for last 30 days
-    customers = 0
-    items_sold = 0
+    # Vendors order items data
+    vendor_recent_sales = OrderItem.objects.filter(vendor=vendor)
 
-    # for order in OrderItem.objects.all():
-    #     if order.product.vendor == vendor:
-    #         order_stream += 1
+    vendor_daily_sales_items = defaultdict(list)
 
-    chart_label = '% Totals'
-    on_transit = 3
-    cancelled = 4
-    pending = 2
-    completed = 9
+    for item in vendor_recent_sales:
+        vendor_daily_sales_items[item['status']].append(item)
+
+    # Set status to count values
+    pending = len(vendor_daily_sales_items["P"])
+    on_transit = len(vendor_daily_sales_items["T"])
+    cancelled = len(vendor_daily_sales_items["C"])
+    delivered = len(vendor_daily_sales_items["D"])
 
     order_stats = [
         ['Order', chart_label],
         ['On Transit', on_transit],
         ['Cancelled', cancelled],
         ['Pending', pending],
-        ['Completed', completed],
-    ]
-    order_stats = dumps(order_stats)
-
-    daily_sales = [
-        ['Day', 'Daily Sales'],
-        # ['2004', 1000],
-        # ['2005', 1170],
-        # ['2006', 660],
-        # ['2005', 1170],
-        # ['2006', 660],
-        # ['2007', 1030],
-        # ['2007', 1030],
-        # ['2007', 1030],
-        # ['2007', 1030],
+        ['Delivered', delivered],
     ]
 
-    from datetime import date
-    from datetime import timedelta
-    today = date.today()  # or you can do today = date.today() for today's date
+    return order_stats
 
-    sales_date = []
 
-    for i in range(0, 10):
-        sales_date.append(today - timedelta(days=i))
+def count_my_customers() -> int:
+    return 0
 
-    from django.utils import timezone as tz
-    d = tz.now() - datetime.timedelta(days=10)
 
-    order_items = OrderItem.objects.filter(timestamp__lt=d)
-    vendor_products = Product.objects.filter(vendor=vendor)
+def calculate_order_stream() -> float:
+    return 0
 
-    daily_sales_total = []
 
-    for item in order_items:
-        if item.product in vendor_products:
-            daily_totals=0
-            # Get total order price
-            daily_sales_total.append(item.product.unit_price * item.quantity)
+def dashboard_analytics(request):
+    active_users = User.objects.filter(is_active=True).count()
+    vendor = get_object_or_404(Vendor, user=request.user)
 
-    # Add the data to daily sales for display
-    daily_sales.append(zip(sales_date, daily_sales_total))
+    # All order items to this vendor
+    orders = OrderItem.objects.filter(vendor=vendor)
+    # Count customers who bought something from this shop
+    customers = count_my_customers()
+    # order stream %
+    order_stream=calculate_order_stream()
+    # Get delivered orders
+    items_sold = formulate_vendors_order_status(vendor)[:-1][1]
 
-    daily_sales = dumps(daily_sales)
+    # Serialize order fulfilment statistics
+    order_stats = dumps(formulate_vendors_order_status(vendor))
+
+    # Serialize daily sales totals
+    daily_sales = dumps(formulate_daily_sales())
+
     context = {"title": "Vendor dashboard analytics", "active_users": active_users, "order_stream": order_stream,
                "customers": customers, "items_sold": items_sold, "orders": orders, "order_stats": order_stats,
                "daily_sales": daily_sales}
@@ -179,6 +210,82 @@ def dashboard_analytics(request):
     return render(request, "vendor/dashboard-analytics.html",
                   context)
 
+
+# def dashboard_analytics(request):
+#     vendor = get_object_or_404(Vendor, user=request.user)
+#     active_users = User.objects.filter(is_active=True).count()
+#
+#     orders = 0  # Total orders
+#     order_stream = 0  # Order for last 30 days
+#     customers = 0
+#     items_sold = 0
+#
+#     chart_label = '% Totals'
+#     on_transit = 3
+#     cancelled = 4
+#     pending = 2
+#     completed = 9
+#
+#     order_stats = [
+#         ['Order', chart_label],
+#         ['On Transit', on_transit],
+#         ['Cancelled', cancelled],
+#         ['Pending', pending],
+#         ['Completed', completed],
+#     ]
+#     order_stats = dumps(order_stats)
+#
+#     sales_date = []
+#
+#     from django.utils import timezone as tz
+#     d = tz.now() - datetime.timedelta(days=10)
+#
+#     order_items = OrderItem.objects.filter(timestamp__lt=d)
+#
+#     vendor_orders = []
+#     for order in order_items:
+#         if order.product in vendor_orders:
+#             vendor_orders.append(order)
+#
+#     daily_sales = [
+#         ['Day', 'Daily Sales'],
+#     ]
+#
+#     daily_sales_total = []
+#
+#     for i in range(0, 10):
+#         # sales_date.append(today - timedelta(days=i))
+#         sales_date.append(str((tz.now() - datetime.timedelta(days=i)).date()))
+#
+#     for i in range(10):
+#         daily_totals = 0
+#         try:
+#             if vendor_orders[i] is not None:
+#                 # Get total order price
+#                 daily_totals = vendor_orders[i].product.unit_price * vendor_orders[i].quantity
+#         except:
+#             # less vendor products
+#             pass
+#         daily_sales_total.append(daily_totals)
+#
+#     # Add the data to daily sales for display
+#     data = list(zip(sales_date, daily_sales_total))
+#     data_to_list = []
+#     for item in data:
+#         item = list(item)
+#         data_to_list.append(item)
+#
+#     # print(data_to_list)
+#     daily_sales += data_to_list
+#
+#     daily_sales = dumps(daily_sales)
+#     context = {"title": "Vendor dashboard analytics", "active_users": active_users, "order_stream": order_stream,
+#                "customers": customers, "items_sold": items_sold, "orders": orders, "order_stats": order_stats,
+#                "daily_sales": daily_sales}
+#
+#     return render(request, "vendor/dashboard-analytics.html",
+#                   context)
+#
 
 def dashboard_products(request):
     vendor = get_object_or_404(Vendor, user=request.user)

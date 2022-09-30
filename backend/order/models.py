@@ -13,6 +13,8 @@ from user.models import User
 
 from product.models import Product
 
+from vendor.models import Vendor
+
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -56,17 +58,22 @@ class OrderItem(models.Model):
     status = models.CharField(
         max_length=1,
         choices=(
-            ("R", "Received"),
+            ("P", "Pending"),
             ("T", "On Transit"),
-            ("D", "Delivered"),
             ("C", "Cancelled"),
+            ("D", "Delivered"),
         ),
         default="R",
         db_index=True
     )
+    timestamp = models.DateField(default=timezone.now)
+    vendor=models.ForeignKey(Vendor,on_delete=models.CASCADE)
 
     def get_total(self):
         return self.product.unit_price * self.quantity
+
+    def get_vendor(self):
+        return self.product.vendor
 
     def __str__(self):
         return f"Order:{self.order}, Name: {self.product.label}, Quantity:{self.quantity}, Total:{self.get_total()}"
