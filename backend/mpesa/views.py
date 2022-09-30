@@ -14,6 +14,7 @@ from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPassword
 from backend.settings import env
 
 BASE_URL = env('BASE_SERVER_URL')
+SANDBOX_URL = "https://sandbox.safaricom.co.ke/mpesa/"
 
 
 # shipment
@@ -31,7 +32,7 @@ class MpesaView(APIView):
         phone = user.phone_number.split("+")[1]
         # phone=254791381653
         access_token = MpesaAccessToken.validated_mpesa_access_token
-        api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+        api_url = f"{SANDBOX_URL}stkpush/v1/processrequest"
         headers = {"Authorization": "Bearer %s" % access_token}
         request = {
             "BusinessShortCode": LipanaMpesaPassword.Business_short_code,
@@ -43,7 +44,7 @@ class MpesaView(APIView):
             "PartyA": phone,  # replace with your phone number to get stk push
             "PartyB": LipanaMpesaPassword.Business_short_code,
             "PhoneNumber": phone,  # replace with your phone number to get stk push
-            "CallBackURL": "https://sandbox.safaricom.co.ke/mpesa/",
+            "CallBackURL": f"{BASE_URL}/confirmation",
             "AccountReference": "Meal-io",
             "TransactionDesc": "Pay for your meal order"
         }
@@ -65,7 +66,7 @@ def getAccessToken(request):
 @csrf_exempt
 def register_urls(request):
     access_token = MpesaAccessToken.validated_mpesa_access_token
-    api_url = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl"
+    api_url = f"{SANDBOX_URL}c2b/v1/registerurl"
     headers = {"Authorization": "Bearer %s" % access_token}
     options = {"ShortCode": LipanaMpesaPassword.Business_short_code,
                "ResponseType": "Completed",
