@@ -8,13 +8,18 @@ class Category(models.Model):
     icon = models.ImageField(upload_to="category//%Y/%m/%d/")
 
     def __str__(self):
-        return self.name
+        return f"{self.name}"
+
+    class Meta:
+        verbose_name = 'categories'
+        verbose_name_plural = 'categories'
+        ordering = ('name',)
 
 
 # Create your models here.
 class Product(models.Model):
     label = models.CharField(max_length=200)
-    unit = models.CharField(max_length=50,
+    unit = models.CharField(max_length=2,
                             choices=(("kg", "Kilograms"), ("g", "Grams"), ("l", "Litre"), ("ml", "Millilitre"),
                                      ("in", "Inches")), default="kg")
     unit_price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='unit price')
@@ -25,14 +30,9 @@ class Product(models.Model):
     quantity = models.PositiveIntegerField(verbose_name='quantity', default=1)
 
     def __str__(self):
-        return self.label
+        return f"{self.label}"
 
     class Meta:
         verbose_name = 'product'
         verbose_name_plural = 'products'
         ordering = ('label',)
-
-    def total_price(self):
-        return self.quantity * self.unit_price
-
-    total_price = property(total_price)

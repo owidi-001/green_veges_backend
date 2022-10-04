@@ -11,7 +11,7 @@ class Vendor(models.Model):
     tagline = models.CharField(max_length=100, null=True)
 
     def __str__(self):
-        return self.brand
+        return self.brand or ""
 
 
 class HelpMessage(models.Model):

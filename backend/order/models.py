@@ -67,7 +67,7 @@ class OrderItem(models.Model):
         db_index=True
     )
     timestamp = models.DateField(default=timezone.now)
-    vendor=models.ForeignKey(Vendor,on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
 
     def get_total(self):
         return self.product.unit_price * self.quantity
@@ -82,7 +82,7 @@ class OrderItem(models.Model):
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     order = models.OneToOneField(
-        Order, on_delete=models.CASCADE, default=None)
+        OrderItem, on_delete=models.CASCADE, default=None)
     message = models.TextField()
     created_on = models.DateTimeField(auto_created=True, default=timezone.now)
     rating = models.IntegerField(default=1)

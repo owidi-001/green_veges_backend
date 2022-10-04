@@ -7,9 +7,10 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ["name", ]
 
 
+#
 class ProductAdmin(admin.ModelAdmin):
-    list_filter = ["category", "vendor"]
-    list_display = ["label", "unit_price", "category", "vendor"]
+    list_filter = ["label"]
+    list_display = ["label", "vendor", "category", "unit_price", "unit", "description", "quantity"]
 
 
 admin.site.register(Category, CategoryAdmin)
