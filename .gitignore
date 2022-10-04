@@ -2,3 +2,6 @@ env
 backend/backend/secrets.py
 backend/backend/.env
 backend/staticfiles
+
+#Hide future media updates
+#backend/media
