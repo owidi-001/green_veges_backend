@@ -26,6 +26,8 @@ from vendor.forms import ContactForm
 from vendor.models import Vendor
 from vendor.serializers import VendorSerializer
 
+from vendor.forms import ShopForm
+
 
 def dashboard_register(request):
     form = UserCreationForm(request.POST)
@@ -90,11 +92,30 @@ def dashboard_login(request):
     return render(request, "vendor/dashboard-login.html", {"title": "Vendor dashboard login"})
 
 
-# def dashboard_logout(request):
-#     active_users = User.objects.filter(is_active=True).count()
-#     return render(request, "vendor/dashboard-analytics.html",
-#                   {"title": "Vendor dashboard analytics", "active_users": active_users})
-#
+def dashboard_shop(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
+
+    form = ShopForm(request.POST, request.FILES)
+
+    if request.POST and form.is_valid():
+        vendor.brand = form.cleaned_data.get("brand")
+
+        print(form.cleaned_data.get("brand"))
+        print(form.cleaned_data.get("tagline"))
+
+        if form.cleaned_data.get("brand"):
+            vendor.brand = form.cleaned_data.get("brand")
+        if form.cleaned_data.get("tagline"):
+            vendor.tagline = form.cleaned_data.get("tagline")
+        if form.cleaned_data.get("logo"):
+            vendor.logo = form.cleaned_data.get("logo")
+        vendor.save()
+
+        messages.info(request, "Your shop has been saved successfully")
+        return redirect("analytics")
+    print(form.errors)
+    return render(request, "vendor/shop.html")
+
 
 def formulate_daily_sales() -> list:
     """ Initialize daily sales """
@@ -255,70 +276,72 @@ def manage_orders(request, id):
 # product create
 def create_product(request):
     categories = Category.objects.all()
-    form = ProductForm(request.POST, request.FILES)
 
-    # print(request.POST)
-    # print(request.FILES)
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES)
 
-    if form.is_valid():
-        product = form.save(commit=False)
-        product.vendor = get_object_or_404(Vendor, user=request.user)
-        product.save()
-        messages.success(request, f"We have successfully added {product.label} to your list!")
-        return redirect('products')
-    else:
-        messages.error(request, f"{form.errors}")
+        # print(request.POST)
+        # print(request.FILES)
 
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.vendor = get_object_or_404(Vendor, user=request.user)
+            product.save()
+            messages.success(request, f"We have successfully added {product.label} to your list!")
+            return redirect('products')
+        else:
+            messages.error(request, f"{form.errors}")
     return render(request, "vendor/product-create.html",
-                  {"errors": form.errors, 'categories': categories, 'current_category': None})
+                  {'categories': categories, 'current_category': None})
 
 
 # edit product
 def edit_product(request, id):
     product = get_object_or_404(Product, id=id)
-    form = ProductForm(request.POST, request.FILES)
     categories = Category.objects.all()
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES)
 
-    print(request.POST)
-    print(form.errors)
+        # print(request.POST)
+        # print(form.errors)
 
-    if request.POST and form.is_valid():
-        label = form.cleaned_data.get('label')
-        unit_price = float(form.cleaned_data.get('unit_price'))
-        quantity = int(form.cleaned_data.get('quantity'))
-        image = form.cleaned_data.get("image")
-        description = form.cleaned_data.get("description")
-        category = request.POST['category']
+        if request.POST and form.is_valid():
+            label = form.cleaned_data.get('label')
+            unit_price = float(form.cleaned_data.get('unit_price'))
+            quantity = int(form.cleaned_data.get('quantity'))
+            image = form.cleaned_data.get("image")
+            description = form.cleaned_data.get("description")
+            category = request.POST['category']
 
-        # print(category)
-        product_category = get_object_or_404(Category, id=category)
+            # print(category)
+            product_category = get_object_or_404(Category, id=category)
 
-        # Update product
-        if label:
-            product.label = label
+            # Update product
+            if label:
+                product.label = label
 
-        if unit_price:
-            product.unit_price = unit_price
+            if unit_price:
+                product.unit_price = unit_price
 
-        if description:
-            product.description = description
+            if description:
+                product.description = description
 
-        if quantity:
-            product.quantity = quantity
+            if quantity:
+                product.quantity = quantity
 
-        if product_category:
-            product.category = product_category
+            if product_category:
+                product.category = product_category
 
-        if image:
-            product.image = image
+            if image:
+                product.image = image
 
-        product.save()
-        messages.success(request, 'Your product has been updated successfully')
-        return redirect('products')
+            product.save()
+            messages.success(request, 'Your product has been updated successfully')
+            return redirect('products')
 
     return render(request, "vendor/product-edit.html",
                   {'product': product, 'categories': categories, 'current_category': product.category,
-                   "errors": form.errors})
+                   })
 
 
 # delete product
@@ -330,7 +353,7 @@ def delete_product(request, id):
         product.delete()
         messages.success(request, "Product deleted successfully")
         return redirect('products')
-    messages.error(request, "The delete operation falied")
+    messages.error(request, "The delete operation failed")
     return redirect('products')
 
 

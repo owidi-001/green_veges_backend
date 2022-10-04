@@ -4,22 +4,19 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from order.forms import AddressForm, AddressUpdateForm, FeedbackForm, OrderItemForm, OrderItemUpdateForm, \
+from order.forms import AddressForm, FeedbackForm, OrderItemForm, OrderItemUpdateForm, \
     OrderForm, OrderUpdateForm
-from order.models import Address, Feedback
+from order.models import Address
 from order.models import Order, OrderItem
 from order.schema import AddressSchema, OrderItemSchema, OrderSchema, FeedbackSchema
 from order.serializers import FeedbackSerializer, AddressSerializer
 from order.serializers import OrderSerializer, OrderItemSerializer
+from product.models import Product
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 # Create your views here.
 from rest_framework.views import APIView
-
-from order.forms import FeedbackGetForm
-
-from product.models import Product
 
 
 class EmailThead(Thread):
@@ -40,7 +37,7 @@ class OrderView(APIView):
     """
     schema = OrderSchema()
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         user = request.user
@@ -52,7 +49,6 @@ class OrderView(APIView):
             return Response(data, status=200)
         return Response({"errors": ["orders not loaded"]}, status=400)
 
-    # Create new order
     def post(self, request):
         form = OrderForm(request.data)
 
@@ -72,8 +68,6 @@ class OrderView(APIView):
             return Response(data, status=200)
         return Response({"errors": ["Failed to create place order"]}, status=400)
 
-    # Update order when payment is done
-    # Todo! Id not passed to form
     def put(self, request):
         form = OrderUpdateForm(request.data)
 
@@ -105,7 +99,6 @@ class OrderView(APIView):
 
         return Response({"errors": ["Failed to update order"]}, status=400)
 
-    # delete
     def delete(self, request):
         form = OrderUpdateForm(request.data)
         if form.is_valid():
@@ -117,7 +110,6 @@ class OrderView(APIView):
         return Response({"errors": ["Failed to deletion"]}, status=400)
 
 
-# order item view
 @method_decorator(csrf_exempt, name='dispatch')
 class OrderItemView(APIView):
     """
@@ -126,7 +118,7 @@ class OrderItemView(APIView):
     schema = OrderItemSchema()
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         orders = Order.objects.filter(customer=request.user)
@@ -174,20 +166,15 @@ class OrderItemView(APIView):
         return Response({"errors": ["Failed to update order item"]}, status=400)
 
 
-"""
-    User address manipulations
-"""
-
-
 @method_decorator(csrf_exempt, name='dispatch')
 class AddressView(APIView):
     """
-    Perform crud on user addresses
+    Create, retrieve and delete user address
     """
     schema = AddressSchema()
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     """
     Retrieve saved user addresses
@@ -195,13 +182,9 @@ class AddressView(APIView):
 
     def get(self, request):
         addresses = Address.objects.filter(user=request.user)
+        data = AddressSerializer(addresses, many=True).data
+        return Response(data, status=200)
 
-        if addresses:
-            data = AddressSerializer(addresses, many=True).data
-            return Response(data, status=200)
-        return Response({"errors": ["User address not loaded"]}, status=400)
-
-    # Create new order item
     def post(self, request):
         form = AddressForm(request.data)
 
@@ -218,55 +201,25 @@ class AddressView(APIView):
         print(f"Form is not valid{form.errors}")
         return Response({"errors": ["Failed to create address"]}, status=400)
 
-    # Update order when payment is done
-    # Todo! Address form not picking id field
-    def put(self, request):
-        form = AddressUpdateForm(request.data)
-        print(form)
-        if form.is_valid():
-            print(form.cleaned_data.get("id"))
-            address = get_object_or_404(Address, id=form.cleaned_data.get("id"))
-            if address:
-                if request.address.name:
-                    address.name = request.address.name
-                if request.address.floor_number:
-                    address.floor_number = request.address.floor_number
-                if request.address.door_number:
-                    address.door_number = request.address.door_number
+    def delete(self, request):
+        address_id = request.id
+        address = get_object_or_404(Address, id=address_id)
 
-                address.save()
-
-                data = OrderItemSerializer(address).data
-
-                return Response(data, status=200)
-        print(form.errors)
-        return Response({"errors": ["Failed to update address"]}, status=400)
+        if address:
+            address.delete()
+            return Response({"message": ["Deleted successfully"]}, status=200)
+        else:
+            return Response({"errors": ["Failed to delete"]}, status=400)
 
 
-# user feedback on order view
 @method_decorator(csrf_exempt, name='dispatch')
 class FeedbackView(APIView):
     """
-    Perform crud on Feedback
+    Client gives feedback on order
     """
     schema = FeedbackSchema()
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-
-        form = FeedbackGetForm(request.data)
-        print(form.is_valid())
-        if form.is_valid():
-            order = get_object_or_404(Order, id=form.cleaned_data.get("order"))
-            feedbacks = Feedback.objects.filter(order=order)
-
-            data = FeedbackSerializer(feedbacks, many=True).data
-
-            return Response(data, status=200)
-
-        print(form.errors)
-        return Response({"errors": ["Order feedbacks cannot be retrieved"]}, status=400)
+    permission_classes = [AllowAny]
 
     # Create new order item
     def post(self, request):
