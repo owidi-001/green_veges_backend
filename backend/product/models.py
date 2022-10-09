@@ -21,13 +21,13 @@ class Product(models.Model):
     label = models.CharField(max_length=200)
     unit = models.CharField(max_length=2,
                             choices=(("kg", "Kilograms"), ("g", "Grams"), ("l", "Litre"), ("ml", "Millilitre"),
-                                     ("in", "Inches")), default="kg")
+                                     ("in", "Inches")), default="kg",help_text="Quantity measurement metrics")
     unit_price = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='unit price')
     image = models.ImageField(upload_to="product//%Y/%m/%d/")
-    description = models.TextField()
+    description = models.TextField(blank=True, verbose_name="description")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(verbose_name='quantity', default=1)
+    stock = models.PositiveIntegerField(verbose_name='stock', default=1)
 
     def __str__(self):
         return f"{self.label}"

@@ -20,17 +20,13 @@ class ProductView(APIView):
     """
 
     schema = ProductSchema()
-    #
+    # permissions
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     """ Returns all available products """
 
     def get(self, request):
-        # vendor = get_object_or_404(Vendor, user=request.user)
-        # if vendor:
-        #     products = Product.objects.filter(vendor=vendor)
-        # else:
         products = Product.objects.all()
 
         serializer = ProductSerializer(products, many=True)
@@ -51,8 +47,8 @@ class ProductView(APIView):
             if form.cleaned_data.get("description"):
                 product.description = form.cleaned_data.get("description")
 
-            if form.cleaned_data.get("quantity"):
-                product.quantity = form.cleaned_data.get("quantity")
+            if form.cleaned_data.get("stock"):
+                product.stock = form.cleaned_data.get("stock")
 
             product.save()
 

@@ -54,10 +54,8 @@ class RegisterUser(APIView):
             token = Token.objects.get(user=user).key
             data["token"] = token
             email_to = form.cleaned_data.get("email")
-            print("Emailing to:", email_to)
             scheme = request.build_absolute_uri().split(":")[0]
             path = f"{scheme}://{request.get_host()}/login"
-            print(path)
             message = render_to_string("registration_email.html", {
                 "email": email_to, "path": path})
             subject = "Registration confirmation"
@@ -80,7 +78,6 @@ class UserLogin(APIView):
     def post(self, request):
         form = UserLoginForm(request.data)
         if form.is_valid():
-            print(form.data)
             user = authenticate(email=form.cleaned_data["email"],
                                 password=form.cleaned_data["password"])
             if user:
@@ -90,6 +87,7 @@ class UserLogin(APIView):
                 return Response(data, status=200)
             return Response({"errors": ["please provide valid credentials"]},
                             status=400)
+        print(form.errors)
         return Response(form.errors, status=400)
 
 
@@ -211,20 +209,15 @@ class UserProfileView(APIView):
         if form.is_valid():
             user = get_object_or_404(User, token=request.token)
 
-            print("User retrieved", user.email)
-
             if form.cleaned_data.get("first_name"):
-                print(form.cleaned_data.get("first_name"))
                 user.first_name = form.cleaned_data["first_name"]
                 user.save()
 
             if form.cleaned_data.get("last_name"):
-                print(form.cleaned_data.get("last_name"))
                 user.last_name = form.cleaned_data["last_name"]
                 user.save()
 
             if form.cleaned_data.get("email"):
-                print(form.cleaned_data.get("email"))
                 user.email = form.cleaned_data["email"]
                 user.save()
 
@@ -234,7 +227,6 @@ class UserProfileView(APIView):
 
             try:
                 user.save()
-                print("User saved")
 
             except:
                 print(user)

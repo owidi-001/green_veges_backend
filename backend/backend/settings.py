@@ -53,9 +53,8 @@ INSTALLED_APPS = [
     # Local
     'user',
     'product',
-    'client',
+    'cart',
     'vendor',
-    'order',
     'mpesa'
 ]
 

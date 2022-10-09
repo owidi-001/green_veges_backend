@@ -9,7 +9,6 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
 from django.utils import timezone
 from order.models import Order
-from order.models import OrderItem
 from product.forms import ProductForm
 from product.models import Category
 from product.models import Product

@@ -12,8 +12,8 @@ class ProductSchema(AutoSchema):
                               schema=coreschema.Object(required=True, description="Product name is required")),
                 coreapi.Field("price", required=True, location="form", example="20.99",
                               schema=coreschema.Object(required=True, description="Product price is required")),
-                coreapi.Field("quantity", required=False, location="form", example="2",
-                              schema=coreschema.Object(required=True, description="Enter quantity available")),
+                coreapi.Field("stock", required=False, location="form", example="2",
+                              schema=coreschema.Object(required=True, description="Enter stock available")),
                 coreapi.Field("description", required=True, location="form",
                               schema=coreschema.Object(required=True, description="Product description is required"))
             ]
@@ -24,8 +24,8 @@ class ProductSchema(AutoSchema):
                                   schema=coreschema.Object(required=True, description="Product name is required")),
                     coreapi.Field("price", required=True, location="form", example="20.99",
                                   schema=coreschema.Object(required=True, description="Product price is required")),
-                    coreapi.Field("quantity", required=False, location="form", example="2",
-                                  schema=coreschema.Object(required=True, description="Enter quantity available")),
+                    coreapi.Field("stock", required=False, location="form", example="2",
+                                  schema=coreschema.Object(required=True, description="Enter stock available")),
                     coreapi.Field("description", required=True, location="form",
                                   schema=coreschema.Object(required=True,
                                                            description="Product description is required"))
