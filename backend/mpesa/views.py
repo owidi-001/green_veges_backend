@@ -1,113 +1,97 @@
+import json
+import datetime
+import requests
+from coreapi.auth import TokenAuthentication
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
-from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.csrf import csrf_exempt
+from requests.auth import HTTPBasicAuth
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.http import HttpResponse, JsonResponse
-import requests
-from requests.auth import HTTPBasicAuth
-import json
-from django.views.decorators.csrf import csrf_exempt
-from .models import MpesaPayment
-
+from .models import Payment
 from .mpesa_config import MpesaConfig as config
 from .mpesa_credentials import MpesaAccessToken, LipanaMpesaPassword
-from backend.settings import env
+from .serializers import PaymentSerializer
+from .utils import format_response, validate_phone, reformat_phone
+from user.models import User
 
-BASE_URL = env('BASE_SERVER_URL')
-SANDBOX_URL = "https://sandbox.safaricom.co.ke/mpesa/"
+SERVER_URL = config.SERVER_URL
+SANDBOX_URL = config.SANDBOX_URL
 
 
-# shipment
 @method_decorator(csrf_exempt, name="dispatch")
-class MpesaView(APIView):
-    # Protect view to only the authenticated
-    permission_classes = (IsAuthenticated,)
-
+class MpesaPaymentView(APIView):
     """
-    Returns all user shipments 
+    Processes payment request by sending stk push to the given phone number
     """
+    # authentication_classes = [TokenAuthentication]
+    permission_classes = [AllowAny]
 
-    def get(self, request):
-        user = request.user
-        phone = user.phone_number.split("+")[1]
-        # phone=254791381653
+    def post(self, request):
+        # Mpesa acceptable numbers begin with 254
+        phone = validate_phone(request.user.phone_number)
+
+        # phone = "254791381653"
         access_token = MpesaAccessToken.validated_mpesa_access_token
+
         api_url = f"{SANDBOX_URL}stkpush/v1/processrequest"
+
         headers = {"Authorization": "Bearer %s" % access_token}
+
         request = {
             "BusinessShortCode": LipanaMpesaPassword.Business_short_code,
             "Password": LipanaMpesaPassword.decode_password,
             "Timestamp": LipanaMpesaPassword.lipa_time,
             "TransactionType": "CustomerPayBillOnline",
             "Amount": 1,
-            # "PartyA": 254791381653,  # replace with your phone number to get stk push
-            "PartyA": phone,  # replace with your phone number to get stk push
+            "PartyA": phone,
             "PartyB": LipanaMpesaPassword.Business_short_code,
-            "PhoneNumber": phone,  # replace with your phone number to get stk push
-            "CallBackURL": f"{BASE_URL}/confirmation",
+            "PhoneNumber": phone,
+            "CallBackURL": f"{SERVER_URL}mpesa/confirmation",
+            # "CallBackURL": "https://1238-41-90-65-86.in.ngrok.io/mpesa/confirmation",
             "AccountReference": "Meal-io",
             "TransactionDesc": "Pay for your meal order"
         }
+
         response = requests.post(api_url, json=request, headers=headers)
-        return HttpResponse('success')
+
+        if response.status_code == status.HTTP_200_OK:
+            return Response(response.text, status=status.HTTP_200_OK)
+        print(response.text)
+        return Response(response.text, status == response.status_code)
 
 
-def getAccessToken(request):
-    consumer_key = config.CONSUMER_KEY
-    consumer_secret = config.CONSUMER_SECRET
-    api_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+class MpesaConfirmationView(APIView):
+    """
+    Receives mpesa payment response and if valid, saved it to the database
+    """
 
-    response = requests.get(api_URL, auth=HTTPBasicAuth(consumer_key, consumer_secret))
-    mpesa_access_token = json.loads(response.text)
-    validated_mpesa_access_token = mpesa_access_token['access_token']
-    return HttpResponse(validated_mpesa_access_token)
+    @csrf_exempt
+    def post(self, request):
+        # print(request.body)
+        mpesa_body = request.body.decode('utf-8')
+        data = format_response(json.loads(mpesa_body))
 
+        # Fetch user with the phone number used for payment
+        user = get_object_or_404(User, phone_number=reformat_phone(str(data["PhoneNumber"])))
 
-@csrf_exempt
-def register_urls(request):
-    access_token = MpesaAccessToken.validated_mpesa_access_token
-    api_url = f"{SANDBOX_URL}c2b/v1/registerurl"
-    headers = {"Authorization": "Bearer %s" % access_token}
-    options = {"ShortCode": LipanaMpesaPassword.Business_short_code,
-               "ResponseType": "Completed",
-               "ConfirmationURL": f"{BASE_URL}/c2b/confirmation",
-               "ValidationURL": f"{BASE_URL}/c2b/validation"}
-    response = requests.post(api_url, json=options, headers=headers)
-    return HttpResponse(response.text)
+        payment = Payment.objects.create(
+            user=user,
+            amount=data["Amount"],
+            mpesaReceiptNumber=data["MpesaReceiptNumber"],
+            balance=data["Balance"],
+            transactionDate=datetime.datetime.utcfromtimestamp(int(data["TransactionDate"]) / 1000).strftime(
+                '%d-%m-%Y %H:%M'),
+            phone=data["PhoneNumber"]
+        )
 
+        # print(payment)
+        payment.save()
 
-@csrf_exempt
-def call_back(request):
-    pass
-
-
-@csrf_exempt
-def validation(request):
-    context = {
-        "ResultCode": 0,
-        "ResultDesc": "Accepted"
-    }
-    return JsonResponse(dict(context))
-
-
-@csrf_exempt
-def confirmation(request):
-    mpesa_body = request.body.decode('utf-8')
-    mpesa_payment = json.loads(mpesa_body)
-    payment = MpesaPayment(
-        first_name=mpesa_payment['FirstName'],
-        last_name=mpesa_payment['LastName'],
-        middle_name=mpesa_payment['MiddleName'],
-        description=mpesa_payment['TransID'],
-        phone_number=mpesa_payment['MSISDN'],
-        amount=mpesa_payment['TransAmount'],
-        reference=mpesa_payment['BillRefNumber'],
-        organization_balance=mpesa_payment['OrgAccountBalance'],
-        type=mpesa_payment['TransactionType'],
-    )
-    payment.save()
-    context = {
-        "ResultCode": 0,
-        "ResultDesc": "Accepted"
-    }
-    return JsonResponse(dict(context))
+        serializer = PaymentSerializer(payment)
+        # print("payment saved")
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
