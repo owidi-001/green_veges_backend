@@ -8,11 +8,16 @@ from rest_framework.views import APIView
 
 from .models import Cart, CartItem, Location
 # from .schema import OrderSchema
-from .serializers import CartItemSerializer, CartSerializer
+from .schema import CartSchema, CartDetailSchema
+from .serializers import CartItemSerializer, CartSerializer, CartDetailSerializer
 from product.models import Product
 
 
-class OrderView(APIView):
+class CartView(APIView):
+    """
+    Cart list, post and put views
+    """
+    schema = CartSchema()
     authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
 
@@ -24,6 +29,7 @@ class OrderView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+
         data = request.data
         data["user"] = request.user.id
 
@@ -41,13 +47,12 @@ class OrderView(APIView):
 
         # Check if data has location
         if data["location"]:
-            lng = data["location"]["lng"]
-            lat = data["location"]["lat"]
             name = data["location"]["name"]
-            city = data["location"]["city"]
-            street = data["location"]["street"]
+            block_name = data["location"]["block_name"]
+            floor_number = data["location"]["floor_number"]
+            door_number = data["location"]["door_number"]
 
-            location = Location.objects.update_or_create(lng=lng, lat=lat, name=name, city=city, street=street)
+            location = Location.objects.update_or_create(name=name, block_name=block_name, floor_number=floor_number, door_number=door_number)
 
             # The above returns a tuple of two, the object and bool if created
             # print(location)
@@ -73,7 +78,7 @@ class OrderView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrderItemView(APIView):
+class CartItemView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
 

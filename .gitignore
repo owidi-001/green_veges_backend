@@ -5,3 +5,4 @@ backend/staticfiles
 
 #Hide future media updates
 #backend/media
+backend/mpesa/request_respose.json

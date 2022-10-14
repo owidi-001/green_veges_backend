@@ -1,7 +1,13 @@
 from rest_framework import serializers
 
-from .models import Cart, CartItem
+from .models import Cart, CartItem, Location
 from product.serializer import ProductSerializer
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ["name", "block_name", "floor_number", "door_number"]
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -13,7 +19,17 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+    location = LocationSerializer(read_only=True)
 
     class Meta:
         model = Cart
-        fields = ["user", "status", "date_ordered", "location"]
+        fields = ["id", "user", "status", "total", "date_ordered", "location"]
+
+
+class CartDetailSerializer(serializers.ModelSerializer):
+    location = LocationSerializer(read_only=True)
+    items = CartItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ["id", "user", "status", "total", "date_ordered", "location", "items"]

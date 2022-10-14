@@ -24,11 +24,12 @@ from rest_framework.documentation import include_docs_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     # local apps
     path('auth/', include('user.urls')),
     path('products/', include('product.urls')),
     path("orders/", include("cart.urls")),
-    # path('', include('mpesa.urls')),
+    # path('mpesa/', include('mpesa.urls')),
 
     # Documentation
     path('', include_docs_urls(title="Green Veges API")),

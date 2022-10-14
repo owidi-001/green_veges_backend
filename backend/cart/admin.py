@@ -30,10 +30,10 @@ class CartItemAdmin(admin.ModelAdmin):
 
 class LocationAdmin(admin.ModelAdmin):
     list_display = [
-        "name", "city", "street"
+        "name", "block_name", "floor_number", "door_number"
     ]
 
 
 admin.site.register(Cart, CartAdmin)
-admin.site.register(CartItem,CartItemAdmin)
+admin.site.register(CartItem, CartItemAdmin)
 admin.site.register(Location, LocationAdmin)

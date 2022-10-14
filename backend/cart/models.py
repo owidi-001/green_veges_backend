@@ -10,28 +10,22 @@ from .utils import randomString
 
 
 class Location(models.Model):
-    lng = models.FloatField(
-        null=True,
-        blank=True,
-    )
-    lat = models.FloatField(
-        null=True,
-        blank=True,
-    )
-    name = models.CharField(max_length=100)
-    city = models.CharField(max_length=100)
-    street = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    block_name = models.CharField(max_length=100, blank=True, null=True)
+    floor_number = models.CharField(max_length=5, blank=True, null=True)
+    door_number = models.CharField(max_length=5, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "location"
 
     def __str__(self):
-        return f"{self.street},{self.city},Kenya"
+        return f"{self.name}"
 
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    STATUS = (("Pending", "Pending"), ("Processing", "Processing"), ("Fulfilled", "Fulfilled"))
+    STATUS = (
+        ("Pending", "Pending"), ("Processing", "Processing"), ("Fulfilled", "Fulfilled"), ("Cancelled", "Cancelled"))
     status = models.CharField(max_length=10, choices=STATUS, default="Pending")
     date_ordered = models.DateTimeField(auto_now_add=timezone.now())
     location = models.ForeignKey(
@@ -39,6 +33,7 @@ class Cart(models.Model):
         on_delete=models.PROTECT,
         related_name="address", null=True, blank=True
     )
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     @property
     def date(self):
@@ -58,5 +53,3 @@ class CartItem(models.Model):
 
     class Meta:
         unique_together = ("cart", "product")
-
-
