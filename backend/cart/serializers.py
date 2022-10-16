@@ -7,7 +7,7 @@ from product.serializer import ProductSerializer
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
-        fields = ["name", "block_name", "floor_number", "door_number"]
+        fields = ["name", "block_name", "floor_number", "room_number"]
 
 
 class CartItemSerializer(serializers.ModelSerializer):

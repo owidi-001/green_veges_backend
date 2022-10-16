@@ -33,7 +33,10 @@ class MpesaPaymentView(APIView):
 
     def post(self, request):
         # Mpesa acceptable numbers begin with 254
-        phone = validate_phone(request.user.phone_number)
+        if not request.data["phone"]:
+            phone = validate_phone(request.user.phone_number)
+        else:
+            phone = validate_phone(request.data["phone"])
 
         # phone = "254791381653"
         access_token = MpesaAccessToken.validated_mpesa_access_token
