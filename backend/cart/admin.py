@@ -30,7 +30,7 @@ class CartItemAdmin(admin.ModelAdmin):
 
 class LocationAdmin(admin.ModelAdmin):
     list_display = [
-        "name", "block_name", "floor_number", "door_number"
+        "name", "block_name", "floor_number", "room_number"
     ]
 
 

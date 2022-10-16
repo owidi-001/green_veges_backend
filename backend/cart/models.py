@@ -13,7 +13,7 @@ class Location(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     block_name = models.CharField(max_length=100, blank=True, null=True)
     floor_number = models.CharField(max_length=5, blank=True, null=True)
-    door_number = models.CharField(max_length=5, blank=True, null=True)
+    room_number = models.CharField(max_length=5, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "location"

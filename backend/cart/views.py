@@ -29,17 +29,47 @@ class CartView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-
         data = request.data
-        data["user"] = request.user.id
 
-        serializer = CartSerializer(data=data)
-        # print(serializer.is_valid())
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
-        # print(serializer.errors)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        # See the nature of request data
+        print(data)
+
+        location_obj = None
+        payment_done = True
+
+        # Create objects from the request data
+        location = Location.objects.get_or_create(name=data["location"]["name"],
+                                                  block_name=data["location"]["block_name"],
+                                                  floor_number=data["location"]["floor_number"],
+                                                  door_number=data["location"]["room_number"]
+                                                  )
+        if location:
+            location_obj = location[1]
+            print("Location successfully created")
+        else:
+            print("Location not created")
+
+        # Create order object
+        cart = Cart.objects.create(user=request.user, location=location_obj, total=data["total"])
+
+        if cart:
+            cart.save()
+            print("Cart saved")
+
+            # Save cart items
+            items = data["items"]
+
+            for item in items:
+                product = get_object_or_404(Product, id=item["product"]["id"])
+                CartItem.objects.create(cart=cart, product=product, quantity=item["quantity"]).save()
+                print("Order item saved")
+
+            # Trigger payment
+            serializer = CartSerializer(cart)
+
+            if payment_done:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"message": "Error creating the order"}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
         data = request.data
@@ -52,7 +82,8 @@ class CartView(APIView):
             floor_number = data["location"]["floor_number"]
             door_number = data["location"]["door_number"]
 
-            location = Location.objects.update_or_create(name=name, block_name=block_name, floor_number=floor_number, door_number=door_number)
+            location = Location.objects.update_or_create(name=name, block_name=block_name, floor_number=floor_number,
+                                                         door_number=door_number)
 
             # The above returns a tuple of two, the object and bool if created
             # print(location)
