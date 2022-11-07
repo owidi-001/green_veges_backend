@@ -1,0 +1,49 @@
+{% extends "dashboard/base_dashboard.html"%}
+
+{% block main%}
+
+<h2 class="title">Available Orders</h2>
+
+<div class="orders_table">
+    {% if orders %}
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>
+                    Order number
+                </th>
+                <th>Date ordered</th>
+                <th>Fulfilment Status</th>
+                <th>Customer</th>
+                <th>Order Quantity</th>
+                <th>Order Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td># {{order.id}} {{order.user.email|capfirst}} {{order.customer.last_name|capfirst}}</td>
+                <td>{{order.cart.date}}</td>
+                <td>{{order.cart.status}}</td>
+                <td>{{order.cart.user.email}}</td>
+                <td>$ {{order.quantity}}</td>
+                <td>$ {{order.get_total}}</td>
+                <td>
+                    <a href="#" class="btn"> <i class="bi bi-bag-eye-fill"></i> Details</a>
+                   {#  <!-- <a href="{% url 'manage_orders' order.id%}"> <i class="bi bi-bag-fill"></i> Manage Order</a> -->#} 
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alt-text">
+        <h4>
+            You don't have any orders yet
+        </h4>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock main%}

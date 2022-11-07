@@ -1,0 +1,49 @@
+{% extends "dashboard/base_dashboard.html"%}
+
+{% block main%}
+<div class="dash-form">
+    <form method="post" enctype ="multipart/form-data" >
+        {% csrf_token %}
+        <legend>
+            Shop Details Form
+        </legend>
+        
+        <div class="form-group">
+            
+        </div>
+        <!-- prefilled details -->
+        <div class="image-logo">
+            <img src="{{vendor.logo.url}}" alt="vendor logo">
+        </div>
+
+        <div class="form-group">
+            <label for="brand">Brand name</label>
+            <input type="text" name="brand" id="brand" value="{{vendor.brand}}">
+        </div>
+        <div class="form-group">
+            <label for="tagline">Tagline</label>
+            <textarea type="text" name="tagline" id="tagline" value="{{vendor.tagline}}" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="logo" class="upload-image" name="logo">
+                Update Logo
+            </label>
+            <input type="file" name="logo" id="logo" style="display: none" accept="image/*">
+        </div>
+        <div class="form-group">
+            <!-- spacer -->
+        </div>
+        <div class="form-group">
+            <!-- spacer -->
+            <p class="auth-link"> Edited and saved by {{request.user.email}}</p>
+        </div>
+        <div class="form-group">
+            <input type="submit" name="submit" value="Save Shop">
+        </div>
+        <div class="form-group">
+            <!-- spacer -->
+            <p class="auth-link"> <a href="{% url 'analytics'%}"> Done </a></p>
+        </div>
+    </form>
+</div>
+{% endblock main%}

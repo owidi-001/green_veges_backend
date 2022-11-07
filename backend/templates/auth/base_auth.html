@@ -1,0 +1,31 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal-io:{{title}}</title>
+    <link rel="stylesheet" href="{% static '/css/theme.css'%}">
+</head>
+
+<body>
+    {% if messages %}
+    <div class="container messages-container">
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% endif %}
+
+    <div class="form-container">
+        {% block auth %}
+        {% endblock auth%}
+    </div>
+</body>
+
+</html>

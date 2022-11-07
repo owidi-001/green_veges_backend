@@ -1,0 +1,53 @@
+{% extends "dashboard/base_dashboard.html"%}
+
+{% block main%}
+<div class="dash-form">
+    <form method="post" enctype ="multipart/form-data" >
+        {% csrf_token %}
+        <legend>
+            Contact form
+        </legend>
+        
+        <div class="form-group">
+            
+        </div>
+        <!-- prefilled details -->
+        <div class="details">
+            Help seeker: {{request.user.email}}
+        </div>
+
+        <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" name="subject" id="subject" placeholder="I can't ABC...">
+        </div>
+        <div class="form-group">
+            <label for="message">Description</label>
+            <textarea type="text" name="message" id="message" placeholder="When I do this, this happens..." rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="upload" class="upload-image" name="upload">
+                Supporting document eg Image
+            </label>
+            <input type="file" name="upload" id="upload" style="display: none" accept="image/*">
+        </div>
+        <div class="form-group">
+            <!-- spacer -->
+        </div>
+        <div class="form-group">
+            <!-- spacer -->
+            <p class="auth-link"> Edited and submitted by {{request.user.email}}</p>
+        </div>
+        <div class="form-group">
+            <input type="submit" name="submit" value="Send help request">
+        </div>
+        <div class="form-group">
+            <!-- spacer -->
+            <p class="auth-link"> Call us on:<a href="#"> 0700 000 000 </a></p>
+        </div>
+        <div class="form-group">
+            <!-- spacer -->
+            <p class="auth-link"> Email us at:<a href="#">help-desk@meal.io </a></p>
+        </div>
+    </form>
+</div>
+{% endblock main%}

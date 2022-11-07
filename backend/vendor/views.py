@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
 from django.utils import timezone
-from order.models import Order
+from cart.models import Cart, CartItem
 from product.forms import ProductForm
 from product.models import Category
 from product.models import Product
@@ -21,77 +21,124 @@ from user.forms import UserCreationForm
 from user.forms import UserLoginForm
 from user.models import User
 from user.views import EmailThead
-from vendor.forms import ContactForm
+from vendor.forms import ContactForm, ShopCreateForm,ShopForm
 from vendor.models import Vendor
 from vendor.serializers import VendorSerializer
-
-from vendor.forms import ShopForm
 
 
 def dashboard_register(request):
     form = UserCreationForm(request.POST)
-    if not form.is_valid():
-        print(form.errors)
 
     if request.method == 'POST':
         if form.is_valid():
-            user = form.save()
+            form.save()
             email_to = form.cleaned_data.get("email")
-            # print("Emailing to:", email_to)
             scheme = request.build_absolute_uri().split(":")[0]
             path = f"{scheme}://{request.get_host()}/login"
-            # print(path)
             message = render_to_string("registration_email.html", {
                 "email": email_to, "path": path})
             subject = "Registration confirmation"
 
             EmailThead([email_to], message, subject).start()
 
+            messages.info(request, "Account created, check your email,login to start")
             try:
-                username = form.cleaned_data.get("email")
-                password = form.cleaned_data.get("password1")
-
-                # Create vendor instance to login
-                Vendor.objects.get_or_create(user=user)
-
-                user = authenticate(username=username, password=password)
-
-                print(f"user:{user}")
-
-                if user:
-                    login(request, user)
-                    return redirect("analytics")
-                else:
-                    messages.info(request, "Account created, login to start")
-                    return redirect('login')
+                vendor_user = get_object_or_404(User, email=form.cleaned_data.get("email"))
+                if vendor_user:
+                    user = authenticate(username=vendor_user.email, password=form.cleaned_data.get("password"))
+                    if user:
+                        login(request, user)
+                        return redirect("create_shop")
             except:
-                print("User not authenticated")
-                messages.info(request, "Login failed")
-                pass
+                return redirect("login")
 
         else:
-            messages.error(request, form.errors)
-            return render(request, "vendor/dashboard-register.html",
-                          {"title": "Vendor dashboard register", "errors": form.errors})
-    return render(request, "vendor/dashboard-register.html",
-                  {"title": "Vendor dashboard register"})
+            print(form.errors)
+    return render(request, "auth/register.html",
+                  {"title": "Account creation"})
 
 
 def dashboard_login(request):
-    form = UserLoginForm(request.POST or None)
-    if request.POST and form.is_valid():
-        username = form.cleaned_data.get('email')
-        password = form.cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
-        if user:
-            login(request, user)
-            return redirect('analytics')
-    else:
-        print(form.errors)
-    return render(request, "vendor/dashboard-login.html", {"title": "Vendor dashboard login"})
+    if request.POST:
+        form = UserLoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                try:
+                    print("Searching vendor")
+                    vendor = get_object_or_404(Vendor, user=user)
+                    print("vendor found")
+                    if vendor.brand is not None:
+                        print("Vendor redirect to analytics")
+                        return redirect('analytics')
+                except:
+                    print("Vendor nor found")
+                    return redirect('create_shop')
+            else:
+                messages.error(request, "Incorrect email or password")
+        else:
+            messages.error(request, form.errors)
+    return render(request, "auth/login.html", {"title": "Account lo"})
 
 
-def dashboard_shop(request):
+def create_shop(request):
+    if request.POST and request.FILES:
+        print(request.FILES)
+        user = request.user
+
+        form = ShopCreateForm(request.POST,request.FILES)
+        print(form)
+        print(form.is_valid())
+        
+        if form.is_valid():
+            print("Form is valid check")
+            vendor=form.save(commit=False)
+            vendor.user=user
+            vendor.save()
+            print("Shop has been saved")
+            messages.info(request, "Your shop has been saved successfully")
+            print("now is redirecting check")
+            return redirect("analytics")
+        else:
+            print(form.errors)
+            messages.error(request, form.errors)
+    print("Failed to get into post body")
+    return render(request, "auth/shop.html")
+
+
+def dashboard_analytics(request):
+    # active_users = User.objects.filter(is_active=True).count()
+    # vendor = get_object_or_404(Vendor, user=request.user)
+
+    # # All order items to this vendor
+    # orders = len(CartItem.objects.filter(vendor=vendor))
+
+    # # Count customers who bought something from this shop
+    # customers = count_my_customers()
+    # # order stream %
+    # order_stream = calculate_order_stream()
+    # # Get delivered orders
+    # # items_sold = formulate_vendors_order_status(vendor)[:-1]
+
+    # items_sold = len(CartItem.objects.filter(vendor=vendor, status="D"))
+    # # Serialize order fulfilment statistics
+
+    # order_stats = dumps(formulate_vendors_order_status(vendor))
+    # # print(order_stats)
+
+    # # Serialize daily sales totals
+    # daily_sales = dumps(formulate_daily_sales())
+
+    # context = {"title": "Vendor dashboard analytics", "active_users": active_users, "order_stream": order_stream,
+    #            "customers": customers, "items_sold": items_sold, "orders": orders, "order_stats": order_stats,
+    #            "daily_sales": daily_sales}
+
+    return render(request, "dashboard/analytics.html",)
+
+def shop_update(request):
     vendor = get_object_or_404(Vendor, user=request.user)
 
     form = ShopForm(request.POST, request.FILES)
@@ -110,187 +157,75 @@ def dashboard_shop(request):
             vendor.logo = form.cleaned_data.get("logo")
         vendor.save()
 
-        messages.info(request, "Your shop has been saved successfully")
-        return redirect("analytics")
+        messages.info(request, "Shop Updated successfully")
+        return redirect("shop_update")
     print(form.errors)
-    return render(request, "vendor/shop.html")
+    return render(request, "dashboard/shop_update.html",{"vendor":vendor})
 
 
-def formulate_daily_sales() -> list:
-    """ Initialize daily sales """
-    daily_sales = [
-        ['Day', 'Daily Sales'],
-    ]
-
-    """Create sales date list"""
-    sales_date = []
-    for i in range(0, 10):
-        sales_date.append(str((timezone.now() - datetime.timedelta(days=i)).date()))
-
-    """ Calculate daily totals """
-    # Vendors last 10 days sales
-    vendor_recent_sales = OrderItem.objects.filter(timestamp__lt=timezone.now() - datetime.timedelta(days=10))
-
-    # Daily sales grouping for the lists of items sold in a day
-    # Group orderItems as per dates
-    vendor_daily_sales_items = defaultdict(list)
-
-    for item in vendor_recent_sales:
-        vendor_daily_sales_items[item['timestamp']].append(item)
-
-    # Sum of each order item made per day in the last x days
-    daily_sales_totals = []
-
-    for i in range(len(sales_date)):
-        daily_sum = 0
-        try:
-            days_list = vendor_daily_sales_items[vendor_daily_sales_items.keys()[i]]
-            if days_list is not None or len(days_list) > 0:
-                items_totals = [x.get_total() for x in days_list]
-                # Get total order price
-                daily_sum = sum(items_totals)
-        except:
-            # less vendor products
-            pass
-        daily_sales_totals.append(daily_sum)
-
-    # Combine the two list for serialization
-    data = list(zip(sales_date, daily_sales_totals))
-
-    data_to_list = []
-    for item in data:
-        item = list(item)
-        data_to_list.append(item)
-
-    # Combine the list generated to the original for serialization
-    daily_sales += data_to_list
-
-    return daily_sales
-
-
-def formulate_vendors_order_status(vendor) -> list:
-    chart_label = 'Status % Totals'
-
-    # Vendors order items data
-    vendor_recent_sales = OrderItem.objects.filter(vendor=vendor)
-
-    vendor_daily_sales_items = defaultdict(list)
-
-    for item in vendor_recent_sales:
-        vendor_daily_sales_items[item['status']].append(item)
-
-    # Set status to count values
-    pending = len(vendor_daily_sales_items["P"])
-    on_transit = len(vendor_daily_sales_items["T"])
-    cancelled = len(vendor_daily_sales_items["C"])
-    delivered = len(vendor_daily_sales_items["D"])
-
-    order_stats = [
-        ['Order', chart_label],
-        ['On Transit', on_transit],
-        ['Cancelled', cancelled],
-        ['Pending', pending],
-        ['Delivered', delivered],
-    ]
-
-    return order_stats
-
-
-def count_my_customers() -> int:
-    return 0
-
-
-def calculate_order_stream() -> float:
-    return 0
-
-
-def dashboard_analytics(request):
-    active_users = User.objects.filter(is_active=True).count()
+def dashboard_orders(request,status):
     vendor = get_object_or_404(Vendor, user=request.user)
+    items = CartItem.objects.all()
 
-    # All order items to this vendor
-    orders = len(OrderItem.objects.filter(vendor=vendor))
+    if status== "P":
+        items = CartItem.objects.filter(status="P")
+    elif status == "T":
+        items = CartItem.objects.filter(status="T")
+    elif status == "F":
+        items = CartItem.objects.filter(status="F")
+    elif status == "C":
+        items = CartItem.objects.filter(status="C")
+    else:
+        items = CartItem.objects.all()
 
-    # Count customers who bought something from this shop
-    customers = count_my_customers()
-    # order stream %
-    order_stream = calculate_order_stream()
-    # Get delivered orders
-    # items_sold = formulate_vendors_order_status(vendor)[:-1]
+    orders=[]
 
-    items_sold = len(OrderItem.objects.filter(vendor=vendor, status="D"))
-    # Serialize order fulfilment statistics
+    for item in items:
+        if item.product.vendor == vendor:
+            # if item.order not in orders:
+            orders.append(item)
 
-    order_stats = dumps(formulate_vendors_order_status(vendor))
-    # print(order_stats)
+    return render(request, "dashboard/orders.html",{"title": "orders", "orders": orders})
 
-    # Serialize daily sales totals
-    daily_sales = dumps(formulate_daily_sales())
 
-    context = {"title": "Vendor dashboard analytics", "active_users": active_users, "order_stream": order_stream,
-               "customers": customers, "items_sold": items_sold, "orders": orders, "order_stats": order_stats,
-               "daily_sales": daily_sales}
+# def manage_orders(request, id):
+#     vendor = get_object_or_404(Vendor, user=request.user)
+#     order = get_object_or_404(Cart, id=id)
+#     order_items = CartItem.objects.filter(order=order)
 
-    return render(request, "vendor/dashboard-analytics.html",
-                  context)
+#     orders = []
+
+#     for order_item in order_items:
+#         if order_item.product.vendor == vendor:
+#             orders.append(order_item)
+
+#     return render(request, "vendor/manage-orders.html",
+#                   {"title": "Manage orders", "order_items": order_items})
 
 
 def dashboard_products(request):
     vendor = get_object_or_404(Vendor, user=request.user)
     products = Product.objects.filter(vendor=vendor)
 
-    return render(request, "vendor/dashboard-products.html",
-                  {"title": "Vendor dashboard product", "products": products})
-
-
-def dashboard_orders(request):
-    vendor = get_object_or_404(Vendor, user=request.user)
-    # order_items = OrderItem.objects.filter(product.vendor == vendor)
-    order_items = OrderItem.objects.all()
-    orders = []
-    for order_item in order_items:
-        if order_item.product.vendor == vendor:
-            if order_item.order not in orders:
-                orders.append(order_item.order)
-
-    return render(request, "vendor/dashboard-orders.html",
-                  {"title": "Vendor dashboard orders", "orders": orders})
-
-
-def manage_orders(request, id):
-    vendor = get_object_or_404(Vendor, user=request.user)
-    order = get_object_or_404(Order, id=id)
-    order_items = OrderItem.objects.filter(order=order)
-
-    orders = []
-
-    for order_item in order_items:
-        if order_item.product.vendor == vendor:
-            orders.append(order_item)
-
-    return render(request, "vendor/manage-orders.html",
-                  {"title": "Manage orders", "order_items": order_items})
+    return render(request, "dashboard/products.html",
+                  {"title": "My products", "products": products})
 
 
 # product create
 def create_product(request):
     categories = Category.objects.all()
-
-    if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES)
-
-        # print(request.POST)
-        # print(request.FILES)
-
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.vendor = get_object_or_404(Vendor, user=request.user)
-            product.save()
-            messages.success(request, f"We have successfully added {product.label} to your list!")
-            return redirect('products')
-        else:
-            messages.error(request, f"{form.errors}")
-    return render(request, "vendor/product-create.html",
+    form = ProductForm(request.POST, request.FILES)
+    
+    if request.method == "POST" and form.is_valid():
+        product = form.save(commit=False)
+        product.vendor = get_object_or_404(Vendor, user=request.user)
+        product.save()
+        print("product saved")
+        messages.success(request, f"{product.label} added successfully")
+        return redirect('products')
+    else:
+        messages.error(request, f"{form.errors}")
+    return render(request, "dashboard/products_create.html",
                   {'categories': categories, 'current_category': None})
 
 
@@ -360,9 +295,6 @@ def dashboard_contact(request):
     form = ContactForm(request.POST, request.FILES)
     vendor = get_object_or_404(Vendor, user=request.user)
 
-    # print(form.errors)
-    # print(request.POST)
-
     if request.POST and form.is_valid():
         contact = form.save(commit=False)
         contact.vendor = vendor
@@ -378,10 +310,101 @@ def dashboard_contact(request):
         # Email the admin
         EmailThead([settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
 
-        messages.info(request, "Your message has been received and you'll be contacted shortly")
+        messages.info(request, "Help message received")
         return redirect("analytics")
-    return render(request, "vendor/dashboard-contact.html",
-                  {"title": "Vendor dashboard contact"})
+    return render(request, "dashboard/contact.html",
+                  {"title": "Help contact"})
+
+
+
+def formulate_daily_sales() -> list:
+    """ Initialize daily sales """
+    daily_sales = [
+        ['Day', 'Daily Sales'],
+    ]
+
+    """Create sales date list"""
+    sales_date = []
+    for i in range(0, 10):
+        sales_date.append(str((timezone.now() - datetime.timedelta(days=i)).date()))
+
+    """ Calculate daily totals """
+    # Vendors last 10 days sales
+    vendor_recent_sales = CartItem.objects.filter(timestamp__lt=timezone.now() - datetime.timedelta(days=10))
+
+    # Daily sales grouping for the lists of items sold in a day
+    # Group orderItems as per dates
+    vendor_daily_sales_items = defaultdict(list)
+
+    for item in vendor_recent_sales:
+        vendor_daily_sales_items[item['timestamp']].append(item)
+
+    # Sum of each order item made per day in the last x days
+    daily_sales_totals = []
+
+    for i in range(len(sales_date)):
+        daily_sum = 0
+        try:
+            days_list = vendor_daily_sales_items[vendor_daily_sales_items.keys()[i]]
+            if days_list is not None or len(days_list) > 0:
+                items_totals = [x.get_total() for x in days_list]
+                # Get total order price
+                daily_sum = sum(items_totals)
+        except:
+            # less vendor products
+            pass
+        daily_sales_totals.append(daily_sum)
+
+    # Combine the two list for serialization
+    data = list(zip(sales_date, daily_sales_totals))
+
+    data_to_list = []
+    for item in data:
+        item = list(item)
+        data_to_list.append(item)
+
+    # Combine the list generated to the original for serialization
+    daily_sales += data_to_list
+
+    return daily_sales
+
+
+def formulate_vendors_order_status(vendor) -> list:
+    chart_label = 'Status % Totals'
+
+    # Vendors order items data
+    vendor_recent_sales = CartItem.objects.filter(vendor=vendor)
+
+    vendor_daily_sales_items = defaultdict(list)
+
+    for item in vendor_recent_sales:
+        vendor_daily_sales_items[item['status']].append(item)
+
+    # Set status to count values
+    pending = len(vendor_daily_sales_items["P"])
+    on_transit = len(vendor_daily_sales_items["T"])
+    cancelled = len(vendor_daily_sales_items["C"])
+    delivered = len(vendor_daily_sales_items["D"])
+
+    order_stats = [
+        ['Order', chart_label],
+        ['On Transit', on_transit],
+        ['Cancelled', cancelled],
+        ['Pending', pending],
+        ['Delivered', delivered],
+    ]
+
+    return order_stats
+
+
+def count_my_customers() -> int:
+    return 0
+
+
+def calculate_order_stream() -> float:
+    return 0
+
+
 
 
 class VendorViews(APIView):

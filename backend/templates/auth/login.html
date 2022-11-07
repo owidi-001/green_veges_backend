@@ -1,0 +1,31 @@
+{% extends "auth/base_auth.html"%}
+{% block auth %}
+<form method="post">
+    {% csrf_token %}
+    <legend>
+        Login Form
+    </legend>
+
+    <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" name="email" id="email" placeholder="example@gmail.com">
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="********">
+    </div>
+    <div class="form-group">
+        <!-- spacer -->
+    </div>
+
+    <div class="form-group">
+        <p>Forgot password? <a href="#">Reset Password</a></p>
+    </div>
+    <div class="form-group">
+        <input type="submit" name="submit" value="Login">
+    </div>
+    <div class="form-group">
+        <p class="auth-link">Don't have an account? <a href="{% url 'register'%}"> Create account </a></p>
+    </div>
+</form>
+{% endblock auth %}

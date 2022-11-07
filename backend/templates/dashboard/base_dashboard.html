@@ -1,0 +1,141 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static '/css/dashboard.css'%}">
+    <link rel="stylesheet" href="{% static '/css/styles.css'%}">
+    <link rel="stylesheet" href="{% static '/css/theme.css'%}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+</head>
+
+<body>
+    <!-- nav -->
+    <nav>
+        <div class="nav-start">
+            <a href="#">
+                <img src="{% static 'imgs/logo.png'%}" alt="">
+            </a>
+            <a href="#">
+                <p>Meal-io</p>
+            </a>
+        </div>
+        <div class="nav-end">
+            <i class="bi bi-bar-bell-fill"></i>
+            <p>John Doe</p>
+        </div>
+    </nav>
+
+    <!-- body -->
+    <main>
+        <aside>
+            <div class="container">
+                <div class="nav-group">
+                    <h2><a href="{% url 'analytics'%}">Home</a></h2>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="{% url 'analytics'%}">
+                                <i class="bi bi-house-fill"></i>
+                                <p>Overview</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'shop_update'%}">
+                                <i class="bi bi-bag-check-fill"></i>
+                                <p>Shop</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div class="nav-group">
+                    <h2><a href="{% url 'vendor_orders'%}">Orders</a></h2>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="{% url 'vendor_orders' P}">
+                                <i class="bi bi-table"></i>
+                                <p>Available</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'vendor_orders' T%}">
+                                <i class="bi bi-bag-check-fill"></i>
+                                <p>On Transit</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'vendor_orders' F%}">
+                                <i class="bi bi-bag-check-fill"></i>
+                                <p>Completed</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'vendor_orders' C%}">
+                                <i class="bi bi-bag-minus"></i>
+                                <p>Cancelled</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div class="nav-group">
+                    <h2><a href="{% url 'products'%}">Products</a></h2>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="{% url 'products'%}">
+                                <i class="bi bi-grid-fill"></i>
+                                <p>Overview</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'create_product'%}">
+                                <i class="bi bi-file-plus-fill"></i>
+                                <p>Create</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+                <div class="nav-group">
+                    <h2><a href="{% url 'contact'%}">Contact</a></h2>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="{% url 'contact'%}">
+                                <i class="bi bi-telephone-fill"></i>
+                                <p>Phone</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'contact'%}">
+                                <i class="bi bi-envelope-fill"></i>
+                                <p>Email</p>
+                            </a>
+                        </li>
+                        <div style="height: 4em;">
+
+                        </div>
+                        <li class="nav-item">
+                            <a href="{% url 'logout'%}">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <p>Logout</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <hr>
+            </div>
+        </aside>
+        <div class="content">
+            {% block main %}
+            {% endblock main %}
+        </div>
+    </main>
+</body>
+
+</html>

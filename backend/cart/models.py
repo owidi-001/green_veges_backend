@@ -50,6 +50,15 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    status=models.CharField(max_length=1,choices=(("F","Completed"),("C","Cancelled"),("T","On Transit"),("P","Pending")),default="P")
 
     class Meta:
         unique_together = ("cart", "product")
+
+    @property
+    def get_total(self) -> float:
+        return self.product.unit_price * self.quantity
+
+    @property
+    def get_vendor_id(self)->int:
+        return self.product.vendor.id

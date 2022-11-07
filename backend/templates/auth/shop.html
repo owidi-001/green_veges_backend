@@ -1,0 +1,34 @@
+{% extends "auth/base_auth.html"%}
+{% block auth%}
+<form method="post" enctype ="multipart/form-data">
+    {% csrf_token %}
+    <legend>
+        Shop Form
+    </legend>
+
+    <div class="form-group">
+        <label for="brand">Brand name</label>
+        <input type="text" name="brand" id="brand" placeholder="xyz cafee">
+    </div>
+    <div class="form-group">
+        <label for="tagline">Tagline</label>
+        <textarea type="text" name="tagline" id="tagline" placeholder="Your selling points" rows="4"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="logo" class="upload-image" name="logo">
+            Upload Logo
+        </label>
+        <input type="file" name="logo" id="logo" style="display: none" accept="image/*">
+    </div>
+    <div class="form-group">
+        <!-- spacer -->
+    </div>
+    <div class="form-group">
+        <input type="submit" name="submit" value="Save Shop">
+    </div>
+    <div class="form-group">
+        <!-- spacer -->
+        <p class="auth-link"> <a href="{% url 'register'%}"> Go Back </a></p>
+    </div>
+</form>
+{% endblock auth%}

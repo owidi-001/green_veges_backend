@@ -45,6 +45,7 @@ class RegisterUser(APIView):
     schema = RegistrationSchema()
 
     def post(self, request):
+        print(request.data)
         form = UserCreationForm(request.data)
 
         if form.is_valid():
@@ -76,6 +77,7 @@ class UserLogin(APIView):
     schema = UserLoginSchema()
 
     def post(self, request):
+        print(request.data)
         form = UserLoginForm(request.data)
         if form.is_valid():
             user = authenticate(email=form.cleaned_data["email"],

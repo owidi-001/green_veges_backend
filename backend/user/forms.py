@@ -5,11 +5,6 @@ from .validators import phone_number_validator, email_validator
 
 
 class UserCreationForm(forms.ModelForm):
-    # email = forms.EmailField(help_text="Email is required")
-    # phone_number = forms.CharField(
-    #     max_length=13, help_text="Phone number is required")
-    # is_vendor = forms.BooleanField(required=False, help_text="I want to be a vendor")
-
     class Meta:
         model = User
         fields = ["phone_number", "email", "password", "is_vendor"]
