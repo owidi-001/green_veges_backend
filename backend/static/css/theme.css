@@ -1,5 +1,6 @@
 :root {
     --primary: #23AA49;
+    --warning: #f0b802;
     --gradient: #EBF8EE;
     --red: #FF324B;
     --secondary: #979899;
@@ -105,36 +106,44 @@ img {
     width: 100%;
     height: auto;
 }
-.card .details{
+
+.card .details {
     padding: 1em .5em;
 }
-.card .details .row{
+
+.card .details .row {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-.card .details .category{
+
+.card .details .category {
     color: var(--secondary);
     font-size: .8em;
 }
-.card .details .price{
+
+.card .details .price {
     color: var(--primary);
     /* font-size: .8em; */
 }
-.card .details .price small{
+
+.card .details .price small {
     color: var(--secondary);
     /* font-size: .8em; */
 }
-.card .details .label{
+
+.card .details .label {
     color: var(--primary);
     font-size: 1.2em;
 }
-.card .details .description{
+
+.card .details .description {
     color: var(--secondary);
     font-size: 1em;
     padding: .5em 0em;
 }
-.card .links{
+
+.card .links {
     width: 100%;
     display: flex;
     align-items: center;
@@ -172,6 +181,23 @@ input[type=submit] {
     outline: 0;
     background: var(--primary);
     margin-bottom: 1em;
+}
+
+.danger {
+    background: var(--red);
+}
+
+.pill {
+    background-color: var(--primary);
+    border: none;
+    color: var(--light);
+    padding: .4em 2em;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 16px;
 }
 
 /* forms */

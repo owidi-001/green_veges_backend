@@ -1,0 +1,64 @@
+{% extends "dashboard/base_dashboard.html"%}
+
+{% block main %}
+<div class="dash-form">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <legend>
+            Update the dish
+        </legend>
+
+        <div class="form-group">
+
+        </div>
+        <!-- prefilled details -->
+        <div class="image-logo">
+            <img src="{{product.image.url}}" alt="product Image">
+        </div>
+
+        <div class="form-group">
+            <label for="label">Name</label>
+            <input type="text" name="label" id="label" value="{{product.label}}">
+        </div>
+        <div class="form-group">
+            <label for="unit_price">Price per unit</label>
+            <input type="number" name="unit_price" id="unit_price" value="{{product.unit_price}}">
+        </div>
+        <div class="form-group">
+            <label for="quantity">Quantity Available</label>
+            <input type="number" name="stock" id="quantity" value="{{product.stock}}">
+        </div>
+        <div class="form-group">
+            <label for="description">Food description</label>
+            <textarea type="text" name="description" id="description" value="{{product.description}}"
+                rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="category">Product category</label>
+            <select name="category" id="category">
+                <option value="{{product.category.id}}" selected="selected">
+                    {{product.category.name}}
+                </option>
+                {% for category in categories %}
+                <option value="{{category.id}}" {% if category == current_category %} selected="selected" {% endif %}>
+                    {{category.name|capfirst}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="product_image" class="upload-image" name="product_image">
+                Upload Image
+            </label>
+            <input type="file" name="image" id="product_image" style="display: none" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <input type="submit" name="submit" value="Update product">
+            <a href="{% url 'product_delete' product.pk %}" class="btn danger"><i class="bi bi-trash"></i> Delete this product</a>
+        </div>
+    </form>
+
+
+</div>
+{% endblock main %}

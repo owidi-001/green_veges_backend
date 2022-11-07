@@ -121,5 +121,12 @@
 
     </form>
 
+    <!-- delete product -->
+    <form class="edit-form" action="{% url 'product_edit' product.id %}" method="delete" enctype="multipart/form-data">
+        {% csrf_token %}
+    
+    </form>
+
+
 </main>
 {% endblock main %}

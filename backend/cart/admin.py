@@ -20,6 +20,7 @@ class CartAdmin(admin.ModelAdmin):
 class CartItemAdmin(admin.ModelAdmin):
     list_display = [
         "cart",
+        "status",
         "product",
         "quantity",
     ]

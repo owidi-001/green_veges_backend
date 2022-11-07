@@ -188,19 +188,22 @@ def dashboard_orders(request,status):
     return render(request, "dashboard/orders.html",{"title": "orders", "orders": orders})
 
 
-# def manage_orders(request, id):
-#     vendor = get_object_or_404(Vendor, user=request.user)
-#     order = get_object_or_404(Cart, id=id)
-#     order_items = CartItem.objects.filter(order=order)
+def manage_order(request, id):
+    order = get_object_or_404(CartItem, id=id)
 
-#     orders = []
+    status_color="#23AA49"
+    riders=[]
 
-#     for order_item in order_items:
-#         if order_item.product.vendor == vendor:
-#             orders.append(order_item)
+    if order.status=="P":
+        status_color="#f0b802"
+        riders=[1,2,3,4,5]
+    elif order.status == "T":
+        status_color="##979899"
+    elif order.status == "C":
+        status_color="#FF324B"
 
-#     return render(request, "vendor/manage-orders.html",
-#                   {"title": "Manage orders", "order_items": order_items})
+    if order:
+        return render(request, "dashboard/order_detail.html",{"title": "Manage order", "order": order,"status_color":status_color,"riders":riders})
 
 
 def dashboard_products(request):
@@ -230,16 +233,14 @@ def create_product(request):
 
 
 # edit product
-def edit_product(request, id):
+def update_product(request, id):
     product = get_object_or_404(Product, id=id)
     categories = Category.objects.all()
-    if request.method == "POST":
+    
+    
+    if request.POST:
         form = ProductForm(request.POST, request.FILES)
-
-        # print(request.POST)
-        # print(form.errors)
-
-        if request.POST and form.is_valid():
+        if form.is_valid():
             label = form.cleaned_data.get('label')
             unit_price = float(form.cleaned_data.get('unit_price'))
             quantity = int(form.cleaned_data.get('quantity'))
@@ -272,23 +273,24 @@ def edit_product(request, id):
             product.save()
             messages.success(request, 'Your product has been updated successfully')
             return redirect('products')
+        else:
+            messages.error(request, 'Product update failed')
 
-    return render(request, "vendor/product-edit.html",
+
+    return render(request, "dashboard/products_edit.html",
                   {'product': product, 'categories': categories, 'current_category': product.category,
                    })
 
 
 # delete product
-def delete_product(request, id):
-    user = request.user
-    vendor = get_object_or_404(Vendor, user=user)
+def delete_product(request,id):
     product = get_object_or_404(Product, id=id)
-    if product.vendor == vendor:
+    try:
         product.delete()
         messages.success(request, "Product deleted successfully")
         return redirect('products')
-    messages.error(request, "The delete operation failed")
-    return redirect('products')
+    except:
+        messages.error(request, "Unable to delete this product")
 
 
 def dashboard_contact(request):

@@ -47,7 +47,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'shop_update'%}">
-                                <i class="bi bi-bag-check-fill"></i>
+                                <i class="bi bi-shop"></i>
                                 <p>Shop</p>
                             </a>
                         </li>
@@ -55,29 +55,29 @@
                 </div>
                 <hr>
                 <div class="nav-group">
-                    <h2><a href="{% url 'vendor_orders'%}">Orders</a></h2>
+                    <h2><a href="{% url 'vendor_orders' 'P' %}">Orders</a></h2>
                     <ul class="nav-list">
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' P}">
+                            <a href="{% url 'vendor_orders' 'P' %}">
                                 <i class="bi bi-table"></i>
                                 <p>Available</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' T%}">
-                                <i class="bi bi-bag-check-fill"></i>
+                            <a href="{% url 'vendor_orders' 'T' %}">
+                                <i class="bi bi-truck"></i>
                                 <p>On Transit</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' F%}">
+                            <a href="{% url 'vendor_orders' 'F' %}">
                                 <i class="bi bi-bag-check-fill"></i>
                                 <p>Completed</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' C%}">
-                                <i class="bi bi-bag-minus"></i>
+                            <a href="{% url 'vendor_orders' 'C' %}">
+                                <i class="bi bi-bag-x-fill"></i>
                                 <p>Cancelled</p>
                             </a>
                         </li>

@@ -39,6 +39,28 @@ class Cart(models.Model):
     def date(self):
         return self.date_ordered.strftime("%d %B, %Y")
 
+    @property
+    def get_address(self) -> str:
+        return f"""Place name: {self.location.name}
+                Block: {self.location.block_name}
+                Floor: {self.location.floor_number}
+                Room:{self.location.room_number}"""
+    @property
+    def get_address_name(self) -> str:
+        return self.location.name
+
+    @property
+    def get_address_block(self) -> str:
+        return  self.location.block_name
+
+    @property
+    def get_address_floor(self) -> str:
+        return self.location.floor_number
+               
+    @property
+    def get_address_room(self) -> str:
+        return self.location.room_number
+
     class Meta:
         verbose_name_plural = "Cart"
 

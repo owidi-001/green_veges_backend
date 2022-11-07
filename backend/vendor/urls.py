@@ -2,8 +2,8 @@ from django.conf import settings
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from .views import (dashboard_register, dashboard_login, dashboard_analytics, dashboard_products, dashboard_contact, \
-                    edit_product, create_product, dashboard_orders, delete_product, VendorViews,
+from .views import (dashboard_register, dashboard_login, dashboard_analytics, dashboard_products, dashboard_contact, manage_order, \
+                    update_product, create_product, dashboard_orders, delete_product, VendorViews,
                     shop_update, create_shop)
 
 urlpatterns = [
@@ -17,11 +17,15 @@ urlpatterns = [
     path("analytics", dashboard_analytics, name="analytics"),
     path("shop", shop_update, name="shop_update"),
     path("orders/<str:status>", dashboard_orders, name="vendor_orders"),
-    # path("orders/<int:id>/manage", manage_orders, name="manage_orders"),
+    path("orders/<int:id>/manage", manage_order, name="manage_order"),
+    
+    # product
     path("products", dashboard_products, name="products"),
     path("products/create", create_product, name="create_product"),
-    path("products/<int:id>/edit", edit_product, name="product_edit"),
+    path("products/<int:id>", update_product, name="product_edit"),
     path("products/<int:id>/delete", delete_product, name="product_delete"),
+
+    # contact
     path("contact", dashboard_contact, name="contact"),
 
     # Vendor api for app

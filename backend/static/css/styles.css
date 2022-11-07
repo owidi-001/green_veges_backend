@@ -46,25 +46,27 @@ body {
     border: 1px solid var(--secondary);
     text-align: center;
     padding: .75rem;
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
 }
 .orders_table table td{
     border: 1px solid var(--secondary);
     text-align: center;
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
 }
 
+.order_detail .product{
+    background: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.order_detail .orders-form{
+    background: var(--secondary);
+}
 /* shop update */
 .image-logo{
     width: 3em;
     height: 3em;
     border-radius: 50%;
     padding: .2em;
-    border: 1px solid var(--primary);
 }
 /* products */
 .product_grid{

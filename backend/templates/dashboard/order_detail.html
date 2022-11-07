@@ -1,0 +1,68 @@
+{% extends "dashboard/base_dashboard.html"%}
+
+{% block main%}
+<div class="order-detail">
+    <div class="product">
+        <img src="{{order.product.image.url}}" alt="product image" style="max-width: 45vw;">
+    </div>
+    <div class="order-form">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <legend>
+                Order Details
+            </legend>
+
+            <div class="form-group">
+                <label>Name: <b>{{order.product.label}}</b></label>
+            </div>
+            <div class="form-group">
+                <label>Quantity: <b>{{order.quantity}}</b></label>
+            </div>
+            <div class="form-group">
+                <label>Total: <b>KES {{order.get_total}}</b></label>
+            </div>
+            <div class="form-group">
+                <button class="pill" style="background: {{status_color}};">{{order.status}}</button>
+            </div>
+            <div class="form-group">
+                <label>Delivery Address:</label> <br>
+            </div>
+            <address>
+                Name: {{order.cart.get_address_name}}
+                Block name: {{order.cart.get_address_block}} <br>
+                Floor: {{order.cart.get_address_floor}}
+                Room: {{order.cart.get_address_room}}
+            </address>
+
+            <div class="form-group">
+                <label for="tagline">Date: {{order.cart.date}}</label>
+            </div>
+            {% if order.status == "P" %}
+            <div class="form-group">
+                <label for="rider">Rider</label>
+                <select name="rider" id="rider">
+                    <option value="-- SELECT RIDER --" selected="selected">
+                        -- SELECT RIDER --
+                    </option>
+                    {% for rider in riders %}
+                    <option value="{{rider}}">
+                        {{rider}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <!-- spacer -->
+                <p class="auth-link"> Edited and saved by {{request.user.email}}</p>
+            </div>
+            <div class="form-group">
+                <input type="submit" name="submit" value="Confirm dispatch">
+            </div>
+            {% endif %}
+        </form>
+        <div>
+
+        </div>
+    </div>
+</div>
+{% endblock main%}
