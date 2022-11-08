@@ -1,4 +1,5 @@
 
+from json import dumps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -20,6 +21,7 @@ from user.views import EmailThead
 from vendor.forms import ContactForm, ShopCreateForm,ShopForm
 from vendor.models import Vendor
 from vendor.serializers import VendorSerializer
+from vendor.utils import customers_streamed, daily_sales_totals, order_status, orders_streamed, pending_orders, top_selling, total_earnings
 
 
 def dashboard_register(request):
@@ -106,33 +108,41 @@ def create_shop(request):
 
 
 def dashboard_analytics(request):
-    # active_users = User.objects.filter(is_active=True).count()
-    # vendor = get_object_or_404(Vendor, user=request.user)
+    # total incoming orders for this vendor
+    total_orders=orders_streamed(request)
+    
+    # pending orders
+    pending=pending_orders(request)
+    
+    # total unique customers for this vendor
+    total_customers=customers_streamed(request)
+    
+    # Total earnings
+    sales_total=total_earnings(request)
 
-    # # All order items to this vendor
-    # orders = len(CartItem.objects.filter(vendor=vendor))
 
-    # # Count customers who bought something from this shop
-    # customers = count_my_customers()
-    # # order stream %
-    # order_stream = calculate_order_stream()
-    # # Get delivered orders
-    # # items_sold = formulate_vendors_order_status(vendor)[:-1]
+    # products by number of orders made
+    top_selling_products=top_selling(request)
 
-    # items_sold = len(CartItem.objects.filter(vendor=vendor, status="D"))
-    # # Serialize order fulfilment statistics
+    # order stats count
+    order_stats=dumps(order_status(request))
+    
+    # daily sales total
+    daily_sales=dumps(daily_sales_totals(request))
+    print(daily_sales)
 
-    # order_stats = dumps(formulate_vendors_order_status(vendor))
-    # # print(order_stats)
+    context={
+        "total_orders":total_orders,
+        "total_customers":total_customers,
+        "sales_total":sales_total,
+        "pending_orders":pending,
+        "top_selling":top_selling_products,
+        "order_stats": order_stats,
+        "daily_totals":daily_sales
+    }
 
-    # # Serialize daily sales totals
-    # daily_sales = dumps(formulate_daily_sales())
+    return render(request, "dashboard/analytics.html",context=context)
 
-    # context = {"title": "Vendor dashboard analytics", "active_users": active_users, "order_stream": order_stream,
-    #            "customers": customers, "items_sold": items_sold, "orders": orders, "order_stats": order_stats,
-    #            "daily_sales": daily_sales}
-
-    return render(request, "dashboard/analytics.html",)
 
 def shop_update(request):
     vendor = get_object_or_404(Vendor, user=request.user)

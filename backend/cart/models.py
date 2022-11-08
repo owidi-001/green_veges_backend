@@ -82,5 +82,17 @@ class CartItem(models.Model):
         return self.product.unit_price * self.quantity
 
     @property
-    def get_vendor_id(self)->int:
-        return self.product.vendor.id
+    def get_vendor(self):
+        return self.product.vendor
+
+    @property
+    def get_customer(self):
+        return self.cart.user
+
+    @property
+    def get_product_id(self) -> int:
+        return self.product.id
+
+    @property
+    def get_order_date(self):
+        return self.cart.date_ordered

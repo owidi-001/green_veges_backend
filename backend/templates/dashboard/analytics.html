@@ -1,7 +1,133 @@
 {% extends "dashboard/base_dashboard.html"%}
-
+{% load static %}
 {% block main%}
 
 <h2>Analytics</h2>
+
+<!-- info cards -->
+<div class="info_cards">
+    <div class="info_card">
+        <div class="container">
+            <div class="title">
+                Order Stream
+            </div>
+            <div class="body">
+                <i class="bi bi-bag-fill"></i>
+                <p class="value">
+                    {{total_orders}}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="info_card">
+        <div class="container">
+            <div class="title">
+                Pending orders
+            </div>
+            <div class="body">
+                <i class="bi bi-bag-dash-fill"></i>
+                <p class="value" style="color: #FF324B;">
+                    {{pending_orders}}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="info_card">
+        <div class="container">
+            <div class="title">
+                Customers Stream
+            </div>
+            <div class="body">
+                <i class="bi bi-person-fill"></i>
+                <p class="value">
+                    {{total_customers}}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="info_card">
+        <div class="container">
+            <div class="title">
+                Revenue Stream
+            </div>
+            <div class="body">
+                <i class="bi bi-cash-coin"></i>
+                <p class="value">
+                    {{sales_total}}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- graphs -->
+<div class="graphs">
+    <div class="container">
+        <div class="bar-graph">
+            <div class="title">
+                Daily Sales
+                <div id="barChart"></div>
+            </div>
+
+        </div>
+        <div class="pie-graph">
+            <div class="title">
+                Order Status
+
+                <div id="pieChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- pie graph -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', { 'packages': ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        const order_data = JSON.parse("{{order_stats|escapejs}}");
+        var data = google.visualization.arrayToDataTable(order_data);
+
+        var options = {
+            title: '% of status fulfilment',
+            pieHole: 0.2,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('pieChart'));
+        chart.draw(data, options);
+    }
+</script>
+
+
+<script>
+    google.charts.load('current', { packages: ['corechart', 'bar'] });
+    google.charts.setOnLoadCallback(dailySalesBars);
+
+    function dailySalesBars() {
+        const sales_data = JSON.parse("{{daily_totals|escapejs}}");
+        console.log(sales_data)
+        var data = google.visualization.arrayToDataTable(sales_data);
+
+        var materialOptions = {
+            chart: {
+                title: 'Summation of daily sales totals',
+                // subtitle: 'Based on order fulfilment'
+            },
+            hAxis: {
+                title: 'Sales Totals',
+                minValue: 0,
+            },
+            vAxis: {
+                title: 'Date'
+            },
+            bars: 'vertical'
+        };
+        var materialChart = new google.charts.Bar(document.getElementById('barChart'));
+        materialChart.draw(data, materialOptions);
+    }
+</script>
 
 {% endblock main%}

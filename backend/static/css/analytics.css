@@ -1,0 +1,100 @@
+:root {
+    --primary: #23AA49;
+    --gradient: #EBF8EE;
+    --red: #FF324B;
+    --secondary: #979899;
+    --white: #ffffff;
+    --dark: #000000;
+    --light: #F3F5F7;
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* global */
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    letter-spacing: 1.5px;
+}
+
+/* info cards */
+.info_cards {
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2em;
+}
+
+.info_card {
+    padding: 2em;
+    position: relative;
+    background: var(--white);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.info_card:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+.info_card .title {
+    font-size: 1.2em;
+    font-weight: 600;
+    padding: .8em 0em;
+    text-transform: capitalize;
+}
+
+.info_card .body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.info_card .body i {
+    color: var(--secondary);
+    font-size: 2em;
+}
+
+.info_card .body .value {
+    color: var(--primary);
+    font-size: 1.5em;
+}
+
+/* graphs */
+.graphs {
+    margin-top: 3em;
+}
+
+.graphs .container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2em;
+    min-height: calc(600px - 3.25em);
+}
+
+.graphs .container .title {
+
+    font-size: 1.2em;
+    font-weight: 600;
+    padding: .4em 0em;
+    text-transform: capitalize;
+    color: var(--secondary);
+}
+
+.pie-graph {
+    padding: 2em;
+    position: relative;
+    background: var(--white);
+}
+.pie-graph  #pieChart{
+    min-height: 400px;
+    min-width: 400px;
+}
+.bar-graph {
+    padding: 2em;
+    position: relative;
+    background: var(--white);
+}
+.bar-graph #barChart{
+    min-height: 400px;
+}

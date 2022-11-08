@@ -1,95 +1,145 @@
 
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
+import datetime
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 from cart.models import CartItem
+from vendor.models import Vendor
 
 
-def formulate_daily_sales() -> list:
-    """ Initialize daily sales """
-    daily_sales = [
-        ['Day', 'Daily Sales'],
-    ]
-
-    """Create sales date list"""
-    sales_date = []
-    for i in range(0, 10):
-        sales_date.append(str((timezone.now() - datetime.timedelta(days=i)).date()))
-
-    """ Calculate daily totals """
-    # Vendors last 10 days sales
-    vendor_recent_sales = CartItem.objects.filter(timestamp__lt=timezone.now() - datetime.timedelta(days=10))
-
-    # Daily sales grouping for the lists of items sold in a day
-    # Group orderItems as per dates
-    vendor_daily_sales_items = defaultdict(list)
-
-    for item in vendor_recent_sales:
-        vendor_daily_sales_items[item['timestamp']].append(item)
-
-    # Sum of each order item made per day in the last x days
-    daily_sales_totals = []
-
-    for i in range(len(sales_date)):
-        daily_sum = 0
-        try:
-            days_list = vendor_daily_sales_items[vendor_daily_sales_items.keys()[i]]
-            if days_list is not None or len(days_list) > 0:
-                items_totals = [x.get_total() for x in days_list]
-                # Get total order price
-                daily_sum = sum(items_totals)
-        except:
-            # less vendor products
-            pass
-        daily_sales_totals.append(daily_sum)
-
-    # Combine the two list for serialization
-    data = list(zip(sales_date, daily_sales_totals))
-
-    data_to_list = []
-    for item in data:
-        item = list(item)
-        data_to_list.append(item)
-
-    # Combine the list generated to the original for serialization
-    daily_sales += data_to_list
-
-    return daily_sales
+# helper function to get vendor orders
+def vendor_orders(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
+    
+    try:
+        items = CartItem.objects.all()
+        vendor_items=[]
+        for item in items:
+            if item.get_vendor==vendor:
+                vendor_items.append(item)
+        return vendor_items
+    except:
+        return []
 
 
-def formulate_vendors_order_status(vendor) -> list:
-    chart_label = 'Status % Totals'
 
-    # Vendors order items data
-    vendor_recent_sales = CartItem.objects.filter(vendor=vendor)
+# orders streamed
+def orders_streamed(request)->int:
+    try:
+        return len(vendor_orders(request))
+    except:
+        return 0
 
-    vendor_daily_sales_items = defaultdict(list)
+def pending_orders(request):
+    vendor_items=vendor_orders(request)
 
-    for item in vendor_recent_sales:
-        vendor_daily_sales_items[item['status']].append(item)
+    # filters only complete orders
+    pending_items=[item for item in vendor_items if item.status=="P"]
 
-    # Set status to count values
-    pending = len(vendor_daily_sales_items["P"])
-    on_transit = len(vendor_daily_sales_items["T"])
-    cancelled = len(vendor_daily_sales_items["C"])
-    delivered = len(vendor_daily_sales_items["D"])
+    try:
+        return len(pending_items)
+    except:
+        return 0
+
+
+def customers_streamed(request)->int:
+    try:
+        vendor_items=vendor_orders(request)
+        customers=[]
+        for item in vendor_items:
+            if item.get_customer not in customers:
+                customers.append(item.get_customer)
+
+        return len(customers)
+    except:
+        return 0
+
+def top_selling(request):
+    # returns the top 3 selling products by order quantity count
+    vendor_items=vendor_orders(request)
+    
+    products={}
+
+    for item in vendor_items:
+        if item.get_product_id not in products:
+            products[item.get_product_id]=item.quantity
+        else:
+            products[item.get_product_id]+=item.quantity
+
+    if len(products) <= 2:
+        return products
+    else:
+        from operator import itemgetter
+        # top N items to be gotten
+        N = 3
+        res = dict(sorted(products.items(), key = itemgetter(1), reverse = True)[:N])
+
+        return res
+
+
+def total_earnings(request):
+    vendor_items=vendor_orders(request)
+
+    # filters only complete orders
+    delivered_items=[item for item in vendor_items if item.status=="F"]
+
+    try:
+        total=sum([item.get_total for item in delivered_items])
+        return total
+    except:
+        return 0
+
+
+
+def order_status(request):
+    vendor_items=vendor_orders(request)
+
+    # order stats count
+    delivered=len([item for item in vendor_items if item.status=="F"])
+    on_transit=len([item for item in vendor_items if item.status=="T"])
+    pending=len([item for item in vendor_items if item.status=="P"])
+    cancelled=len([item for item in vendor_items if item.status=="C"])
+    
+    if delivered == on_transit == pending == cancelled == 0:
+        delivered=1
+        on_transit=1
+        pending=1
+        cancelled=1
 
     order_stats = [
-        ['Order', chart_label],
+        ['Status','Order count'],
+        ['Delivered', delivered],
         ['On Transit', on_transit],
         ['Cancelled', cancelled],
         ['Pending', pending],
-        ['Delivered', delivered],
     ]
 
     return order_stats
 
 
-def count_my_customers() -> int:
-    return 0
+# daily sales totals
+def daily_sales_totals(request):
+    
+    # last ten dates from today
+    sale_dates = [(timezone.now() - datetime.timedelta(days=i)).date() for i in range(10)]
+    vendor_items=vendor_orders(request)
 
+    date_totals={}
 
-def calculate_order_stream() -> float:
-    return 0
+    for sale_date in sale_dates:
+        totals=0
+        for item in vendor_items:
+            if sale_date == item.get_order_date.date():
+                totals+=item.get_total
+
+        date_totals[str(sale_date)]=float(totals)
+
+    data=[
+        ['Date', 'Sales total']
+    ]
+    x=[[k,v] for k,v in date_totals.items()]
+    x.reverse()
+    return data + x
 
