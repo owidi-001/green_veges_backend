@@ -87,8 +87,8 @@
     background: var(--white);
 }
 .pie-graph  #pieChart{
-    min-height: 400px;
-    min-width: 400px;
+    width: 100%;
+    height: 100%;
 }
 .bar-graph {
     padding: 2em;

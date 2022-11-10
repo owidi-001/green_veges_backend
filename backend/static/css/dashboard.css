@@ -42,8 +42,8 @@ nav {
     gap: 1em;
 }
 
-.nav-start img {
-    width: 3em;
+nav img {
+    width: 2.5em;
 }
 
 .nav-start p {
@@ -56,9 +56,21 @@ nav {
     justify-content: start;
     gap: 1em;
 }
+.nav-end img{
+    max-width: 2.5em;
+    max-height: 2.5em;
+    height: auto;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    padding: .1em;
+}
 
-.nav-end i {
+.nav-end .date_today {
     color: var(--primary);
+    background: var(--light);
+    padding: .5em 1.2em;
+    border-radius: .4em;
+    font-size: .8em;
 }
 
 .nav-end p {

@@ -77,7 +77,7 @@ class UserLogin(APIView):
     schema = UserLoginSchema()
 
     def post(self, request):
-        print(request.data)
+        # print(request.data)
         form = UserLoginForm(request.data)
         if form.is_valid():
             user = authenticate(email=form.cleaned_data["email"],
@@ -89,7 +89,7 @@ class UserLogin(APIView):
                 return Response(data, status=200)
             return Response({"errors": ["please provide valid credentials"]},
                             status=400)
-        print(form.errors)
+        # print(form.errors)
         return Response(form.errors, status=400)
 
 

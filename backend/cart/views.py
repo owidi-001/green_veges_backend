@@ -22,7 +22,7 @@ class CartView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        orders = Cart.objects.all()
+        orders = Cart.objects.all().order_by("-date_ordered")
         # print(orders)
         serializer = CartSerializer(orders, many=True)
 
@@ -32,30 +32,39 @@ class CartView(APIView):
         data = request.data
 
         # See the nature of request data
-        print(data)
+        # {
+        #     'location': {'name': 'Njokerio Seventh Street  Njoro  Kenya', 'block_name': 'Binti', 'floor_number': '1', 'room_number': 'b8'}, 
+        # 'items': [{'product': 3, 'quantity': 1}, {'product': 1, 'quantity': 1}], 
+        # 'total': 349.0, 
+        # 'phone': '0791381653'
+        # }
+
 
         payment_done = True
 
         # Create objects from the request data
-        location = Location.objects.get_or_create(name=data["location"]["name"],
-                                                  block_name=data["location"]["block_name"],
-                                                  floor_number=data["location"]["floor_number"],
-                                                  room_number=data["location"]["room_number"]
+        # print(list(data.keys()))
+
+        location=data["location"]
+        delivery_location = Location.objects.get_or_create(name=location["name"],
+                                                  block_name=location["block_name"],
+                                                  floor_number=location["floor_number"],
+                                                  room_number=location["room_number"]
                                                   )
 
         # Create order object
-        cart = Cart.objects.create(user=request.user, location=location[0], total=data["total"])
+        cart = Cart.objects.create(user=request.user, location=delivery_location[0], total=data["total"])
 
         if cart:
             cart.save()
-
+            # print("cart saved")
             # Save cart items
             items = data["items"]
 
             for item in items:
                 product = get_object_or_404(Product, id=item["product"])
                 CartItem.objects.create(cart=cart, product=product, quantity=item["quantity"]).save()
-                print("Order item saved")
+                # print("Order item saved")
 
             # Trigger payment
             serializer = CartSerializer(cart)

@@ -35,6 +35,9 @@ class Cart(models.Model):
     )
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    class Meta:
+        ordering=["-date_ordered"]
+
     @property
     def date(self):
         return self.date_ordered.strftime("%d %B, %Y")

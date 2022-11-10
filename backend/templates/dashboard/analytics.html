@@ -67,16 +67,15 @@
         <div class="bar-graph">
             <div class="title">
                 Daily Sales
-                <div id="barChart"></div>
             </div>
+            <div id="barChart"></div>
 
         </div>
         <div class="pie-graph">
             <div class="title">
                 Order Status
-
-                <div id="pieChart"></div>
             </div>
+            <div id="pieChart"></div>
         </div>
     </div>
 </div>
@@ -92,8 +91,9 @@
         var data = google.visualization.arrayToDataTable(order_data);
 
         var options = {
-            title: '% of status fulfilment',
+            // title: '% of status fulfilment',
             pieHole: 0.2,
+            outerWidth: 500
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('pieChart'));

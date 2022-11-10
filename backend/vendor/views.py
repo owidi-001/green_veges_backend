@@ -13,6 +13,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from user.forms import UserCreationForm
 # signup COMPLETE
 from user.forms import UserLoginForm
@@ -108,6 +109,7 @@ def create_shop(request):
 
 
 def dashboard_analytics(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
     # total incoming orders for this vendor
     total_orders=orders_streamed(request)
     
@@ -138,7 +140,8 @@ def dashboard_analytics(request):
         "pending_orders":pending,
         "top_selling":top_selling_products,
         "order_stats": order_stats,
-        "daily_totals":daily_sales
+        "daily_totals":daily_sales,
+        "vendor":vendor
     }
 
     return render(request, "dashboard/analytics.html",context=context)
@@ -191,10 +194,13 @@ def dashboard_orders(request,status):
             # if item.order not in orders:
             orders.append(item)
 
-    return render(request, "dashboard/orders.html",{"title": "orders", "orders": orders})
+    return render(request, "dashboard/orders.html",{"title": "orders", "orders": orders,"vendor":vendor})
 
 
 def manage_order(request, id):
+
+    vendor = get_object_or_404(Vendor, user=request.user)
+
     order = get_object_or_404(CartItem, id=id)
 
     status_color="#23AA49"
@@ -209,7 +215,8 @@ def manage_order(request, id):
         status_color="#FF324B"
 
     if order:
-        return render(request, "dashboard/order_detail.html",{"title": "Manage order", "order": order,"status_color":status_color,"riders":riders})
+        return render(request, "dashboard/order_detail.html",{"title": "Manage order", "order": order,"status_color":status_color,"riders":riders,"vendor":vendor})
+
 
 
 def dashboard_products(request):
@@ -217,11 +224,12 @@ def dashboard_products(request):
     products = Product.objects.filter(vendor=vendor)
 
     return render(request, "dashboard/products.html",
-                  {"title": "My products", "products": products})
+                  {"title": "My products", "products": products,"vendor":vendor})
 
 
 # product create
 def create_product(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
     categories = Category.objects.all()
     form = ProductForm(request.POST, request.FILES)
     
@@ -235,11 +243,12 @@ def create_product(request):
     else:
         messages.error(request, f"{form.errors}")
     return render(request, "dashboard/products_create.html",
-                  {'categories': categories, 'current_category': None})
+                  {'categories': categories, 'current_category': None,"vendor":vendor})
 
 
 # edit product
 def update_product(request, id):
+    vendor = get_object_or_404(Vendor, user=request.user)
     product = get_object_or_404(Product, id=id)
     categories = Category.objects.all()
     
@@ -284,7 +293,7 @@ def update_product(request, id):
 
 
     return render(request, "dashboard/products_edit.html",
-                  {'product': product, 'categories': categories, 'current_category': product.category,
+                  {'product': product, 'categories': categories, 'current_category': product.category,"vendor":vendor
                    })
 
 
@@ -300,6 +309,7 @@ def delete_product(request,id):
 
 
 def dashboard_contact(request):
+
     form = ContactForm(request.POST, request.FILES)
     vendor = get_object_or_404(Vendor, user=request.user)
 
@@ -321,7 +331,7 @@ def dashboard_contact(request):
         messages.info(request, "Help message received")
         return redirect("analytics")
     return render(request, "dashboard/contact.html",
-                  {"title": "Help contact"})
+                  {"title": "Help contact","vendor":vendor})
 
 
 
@@ -336,6 +346,5 @@ class VendorViews(APIView):
 
     def get(self, request):
         vendors = Vendor.objects.all()
-        vendors = [vendor for vendor in vendors if vendor.brand is not None]
         serializer = VendorSerializer(vendors, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_200_ok)
