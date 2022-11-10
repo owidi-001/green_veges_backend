@@ -5,10 +5,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
-from cart.models import CartItem
+from cart.models import CartItem, OrderRider
 from product.forms import ProductForm
 from product.models import Category
 from product.models import Product
+from rider.models import Rider
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -202,20 +203,43 @@ def manage_order(request, id):
     vendor = get_object_or_404(Vendor, user=request.user)
 
     order = get_object_or_404(CartItem, id=id)
+    rider = None
 
     status_color="#23AA49"
     riders=[]
 
     if order.status=="P":
         status_color="#f0b802"
-        riders=[1,2,3,4,5]
-    elif order.status == "T":
-        status_color="##979899"
-    elif order.status == "C":
-        status_color="#FF324B"
+        riders=Rider.objects.all()
+
+        if request.method=="POST":
+            # order=request.order
+            order=get_object_or_404(CartItem,id=request.POST.get("order")) # value is hidden input
+            rider_user=get_object_or_404(User,email=request.POST.get("rider"))
+            if rider_user:
+                rider=get_object_or_404(Rider,user=rider_user)
+                # Create rider dispatch
+                ride=OrderRider.objects.create(rider=rider,item=order)
+                if ride:
+                    # update status to on transit
+                    order.status="T"
+                    status_color="##979899"
+
+                    order.save()
+                    messages.success(request,"Order dispatched successfully")
+                    # Order dispatched, redirect to analytics
+                    # return redirect("analytics")
+    else:
+        order_rider=get_object_or_404(OrderRider,item=order)
+        rider=order_rider.rider
+
+        if order.status == "T":
+            status_color="##979899"
+        elif order.status == "C":
+            status_color="#FF324B"        
 
     if order:
-        return render(request, "dashboard/order_detail.html",{"title": "Manage order", "order": order,"status_color":status_color,"riders":riders,"vendor":vendor})
+        return render(request, "dashboard/order_detail.html",{"title": "Manage order", "order": order,"status_color":status_color,"riders":riders,"vendor":vendor,"rider":rider})
 
 
 
@@ -347,4 +371,4 @@ class VendorViews(APIView):
     def get(self, request):
         vendors = Vendor.objects.all()
         serializer = VendorSerializer(vendors, many=True)
-        return Response(serializer.data,status=status.HTTP_200_ok)
+        return Response(serializer.data,status=status.HTTP_200_OK)

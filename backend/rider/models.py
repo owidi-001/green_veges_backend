@@ -7,4 +7,4 @@ class Rider(models.Model):
     license=models.CharField(max_length=9)
 
     def __str__(self) -> str:
-        return super().__str__(self.license)
+        return self.user.email        

@@ -13,9 +13,18 @@ from rider.models import Rider
 
 
 
-class RiderCreateViews(APIView):
-    """ Create rider from saved user """
+class RiderViews(APIView):
+    """ Views for rider """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [AllowAny]
+
+    def get(self,request):
+        riders=Rider.objects.all()
+        serializer=RiderSerializer(riders,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
     def post(self,request):
+        print(request.data)
         form=RiderForm(request.POST)
 
         if form.is_valid():

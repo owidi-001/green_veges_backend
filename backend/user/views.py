@@ -45,7 +45,7 @@ class RegisterUser(APIView):
     schema = RegistrationSchema()
 
     def post(self, request):
-        print(request.data)
+        # print(request.data)
         form = UserCreationForm(request.data)
 
         if form.is_valid():

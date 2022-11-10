@@ -24,9 +24,15 @@
             <div class="form-group">
                 <button class="pill" style="background: {{status_color}};">{{order.status}}</button>
             </div>
+            {% if rider %}
+            <div class="form-group">
+                <label for="rider">Rider: {{rider}}</label>
+            </div>
+            {% endif %}
             <div class="form-group">
                 <label>Delivery Address:</label> <br>
             </div>
+
             <address>
                 Name: {{order.cart.get_address_name}}
                 Block name: {{order.cart.get_address_block}} <br>
@@ -37,6 +43,7 @@
             <div class="form-group">
                 <label for="tagline">Date: {{order.cart.date}}</label>
             </div>
+
             {% if order.status == "P" %}
             <div class="form-group">
                 <label for="rider">Rider</label>
@@ -51,6 +58,7 @@
                     {% endfor %}
                 </select>
             </div>
+            <input type="text" name="order" value="{{order.id}}" style="display: none;"> <!-- this id is needed for the item data -->
             <div class="form-group">
                 <!-- spacer -->
                 <p class="auth-link"> Edited and saved by {{request.user.email}}</p>

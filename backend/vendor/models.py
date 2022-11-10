@@ -1,4 +1,5 @@
 from django.db import models
+from rider.models import Rider
 from user.models import User
 
 
@@ -17,3 +18,12 @@ class HelpMessage(models.Model):
     subject = models.CharField(max_length=200)
     message = models.TextField()
     upload = models.FileField(upload_to='contact/%Y/%m/%d/', null=True, blank=True)
+
+
+
+class VendorRider(models.Model):
+    vendor=models.ForeignKey(Vendor,on_delete=models.CASCADE)
+    rider=models.ForeignKey(Rider,on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.vendor}:{self.rider}"
