@@ -5,9 +5,6 @@ from django.utils import timezone
 from product.models import Product
 
 from user.models import User
-from rider.models import Rider
-
-from .utils import randomString
 
 
 class Location(models.Model):
@@ -100,8 +97,3 @@ class CartItem(models.Model):
     @property
     def get_order_date(self):
         return self.cart.date_ordered
-
-
-class OrderRider(models.Model):
-    item=models.ForeignKey(CartItem,on_delete=models.CASCADE)
-    rider=models.ForeignKey(Rider,on_delete=models.CASCADE)

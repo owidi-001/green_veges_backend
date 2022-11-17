@@ -5,5 +5,5 @@ from .models import Payment
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Payment
-        fields = ["__all__"]
+        model = Payment # return true since payment saved is success
+        fields = ["user","phone","amount","mpesaReceiptNumber"]

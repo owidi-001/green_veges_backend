@@ -1,7 +1,7 @@
+from product.serializer import ProductSerializer
 from rest_framework import serializers
 
 from .models import Cart, CartItem, Location
-from product.serializer import ProductSerializer
 
 
 class LocationSerializer(serializers.ModelSerializer):

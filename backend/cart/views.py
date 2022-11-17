@@ -1,5 +1,6 @@
 # Create your views here.
 from django.shortcuts import get_object_or_404
+from product.models import Product
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny
@@ -8,9 +9,8 @@ from rest_framework.views import APIView
 
 from .models import Cart, CartItem, Location
 # from .schema import OrderSchema
-from .schema import CartSchema, CartDetailSchema
-from .serializers import CartItemSerializer, CartSerializer, CartDetailSerializer
-from product.models import Product
+from .schema import CartSchema
+from .serializers import CartItemSerializer, CartSerializer
 
 
 class CartView(APIView):
@@ -28,50 +28,41 @@ class CartView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    """
+    Saves order once the payment is complete
+    """
+
     def post(self, request):
         data = request.data
 
-        # See the nature of request data
-        # {
-        #     'location': {'name': 'Njokerio Seventh Street  Njoro  Kenya', 'block_name': 'Binti', 'floor_number': '1', 'room_number': 'b8'}, 
-        # 'items': [{'product': 3, 'quantity': 1}, {'product': 1, 'quantity': 1}], 
-        # 'total': 349.0, 
-        # 'phone': '0791381653'
-        # }
-
-
-        payment_done = True
-
-        # Create objects from the request data
-        # print(list(data.keys()))
-
-        location=data["location"]
+        location = data["location"]
         delivery_location = Location.objects.get_or_create(name=location["name"],
-                                                  block_name=location["block_name"],
-                                                  floor_number=location["floor_number"],
-                                                  room_number=location["room_number"]
-                                                  )
+                                                           block_name=location["block_name"],
+                                                           floor_number=location["floor_number"],
+                                                           room_number=location["room_number"]
+                                                           )
 
         # Create order object
         cart = Cart.objects.create(user=request.user, location=delivery_location[0], total=data["total"])
 
         if cart:
             cart.save()
-            # print("cart saved")
+            print("cart saved")
             # Save cart items
             items = data["items"]
 
             for item in items:
                 product = get_object_or_404(Product, id=item["product"])
-                CartItem.objects.create(cart=cart, product=product, quantity=item["quantity"]).save()
+                if product:
+                    CartItem.objects.create(cart=cart, product=product, quantity=item["quantity"]).save()
+                    product.stock -= item["quantity"]
+                    product.save()
                 # print("Order item saved")
 
             # Trigger payment
             serializer = CartSerializer(cart)
 
-            if payment_done:
-                print("Everything successful")
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({"message": "Error creating the order"}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):

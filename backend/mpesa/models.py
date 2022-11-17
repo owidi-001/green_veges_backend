@@ -12,6 +12,7 @@ class Payment(models.Model):
     balance = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     transactionDate = models.DateTimeField()
     phone = models.CharField(max_length=13)
+    
 
     class Meta:
         verbose_name = 'Mpesa Payment'

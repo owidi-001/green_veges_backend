@@ -54,7 +54,7 @@
             <div class="body">
                 <i class="bi bi-cash-coin"></i>
                 <p class="value">
-                    {{sales_total}}
+                    KES: {{sales_total}}
                 </p>
             </div>
         </div>
@@ -88,7 +88,9 @@
 
     function drawChart() {
         const order_data = JSON.parse("{{order_stats|escapejs}}");
-        var data = google.visualization.arrayToDataTable(order_data);
+        var newArr=[['Status','Order count',{role:'style'}]].concat(order_data);
+        console.log(newArr)
+        var data = google.visualization.arrayToDataTable(newArr);
 
         var options = {
             // title: '% of status fulfilment',

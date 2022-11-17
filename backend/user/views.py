@@ -45,9 +45,9 @@ class RegisterUser(APIView):
     schema = RegistrationSchema()
 
     def post(self, request):
-        # print(request.data)
+        print(request.data)
         form = UserCreationForm(request.data)
-
+        # print(form.is_valid)
         if form.is_valid():
             user = form.save()
             data = UserSerializer(user).data
@@ -57,7 +57,7 @@ class RegisterUser(APIView):
             email_to = form.cleaned_data.get("email")
             scheme = request.build_absolute_uri().split(":")[0]
             path = f"{scheme}://{request.get_host()}/login"
-            message = render_to_string("registration_email.html", {
+            message = render_to_string("auth/registration_email.html", {
                 "email": email_to, "path": path})
             subject = "Registration confirmation"
             # send_mail(message, [email_to])
@@ -79,18 +79,20 @@ class UserLogin(APIView):
     def post(self, request):
         # print(request.data)
         form = UserLoginForm(request.data)
+        print(form.is_valid())
         if form.is_valid():
             user = authenticate(email=form.cleaned_data["email"],
                                 password=form.cleaned_data["password"])
+            print(user)                                
             if user:
                 token = Token.objects.get(user=user).key
                 data = UserSerializer(user).data
                 data["token"] = token
-                return Response(data, status=200)
+                return Response(data, status=status.HTTP_200_OK)
             return Response({"errors": ["please provide valid credentials"]},
-                            status=400)
+                            status=status.HTTP_400_BAD_REQUEST)
         # print(form.errors)
-        return Response(form.errors, status=400)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # TODO add route for reset password done

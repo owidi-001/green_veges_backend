@@ -29,7 +29,7 @@ urlpatterns = [
     path('auth/', include('user.urls')),
     path('products/', include('product.urls')),
     path("orders/", include("cart.urls")),
-    path('mpesa/', include('mpesa.urls')),
+    # path('mpesa/', include('mpesa.urls')),
 
     path('vendors/', include('vendor.urls')),
     path('riders/', include('rider.urls')),

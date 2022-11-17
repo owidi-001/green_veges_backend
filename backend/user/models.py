@@ -18,7 +18,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(
         max_length=13, null=False, blank=False, unique=True)
-    is_vendor = models.BooleanField(default=False, blank=True)
     username = None
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["phone_number"]

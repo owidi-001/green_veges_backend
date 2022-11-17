@@ -7,7 +7,7 @@ from .validators import phone_number_validator, email_validator
 class UserCreationForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["phone_number", "email", "password", "is_vendor"]
+        fields = ["phone_number", "email", "password"]
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
@@ -61,8 +61,7 @@ class UserUpdateForm(forms.ModelForm):
         max_length=150, help_text="Last name is required")
     phone_number = forms.CharField(
         max_length=13, help_text="Phone number is required")
-    is_vendor = forms.BooleanField(required=False, help_text="I want to be a vendor")
 
     class Meta:
         model = User
-        fields = ["phone_number", "email", "first_name", "last_name", "password", "is_vendor"]
+        fields = ["phone_number", "email", "first_name", "last_name", "password"]

@@ -21,7 +21,6 @@ class RegistrationSchema(AutoSchema):
                     ),
                 ),
                 coreapi.Field("password", required=True, location="form"),
-                coreapi.Field("is_vendor", required=False, location="form", schema=coreschema.Boolean(default=False)),
             ]
         manual_fields = super().get_manual_fields(path, method)
         return manual_fields + extra_fields
@@ -47,9 +46,7 @@ class UserSchema(AutoSchema):
                 coreapi.Field("last_name", required=True,
                               location="form", schema=None),
                 coreapi.Field("email", required=True, location="form"),
-                coreapi.Field("phone_number", required=True, location="form"),
-                coreapi.Field("is_vendor", required=False, location="form"),
-
+                coreapi.Field("phone_number", required=True, location="form")
             ]
         manual_fields = super().get_manual_fields(path, method)
         return manual_fields + extra_fields

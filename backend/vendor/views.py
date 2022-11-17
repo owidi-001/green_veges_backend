@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
-from cart.models import CartItem, OrderRider
+from cart.models import CartItem
+
 from product.forms import ProductForm
 from product.models import Category
 from product.models import Product
@@ -21,9 +22,13 @@ from user.forms import UserLoginForm
 from user.models import User
 from user.views import EmailThead
 from vendor.forms import ContactForm, ShopCreateForm,ShopForm
-from vendor.models import Vendor
+# from vendor.models import Vendor,OrderRider
 from vendor.serializers import VendorSerializer
 from vendor.utils import customers_streamed, daily_sales_totals, order_status, orders_streamed, pending_orders, top_selling, total_earnings
+
+from vendor.models import Vendor
+
+from rider.models import OrderRider
 
 
 def dashboard_register(request):
@@ -35,7 +40,7 @@ def dashboard_register(request):
             email_to = form.cleaned_data.get("email")
             scheme = request.build_absolute_uri().split(":")[0]
             path = f"{scheme}://{request.get_host()}/login"
-            message = render_to_string("registration_email.html", {
+            message = render_to_string("auth/registration_email.html", {
                 "email": email_to, "path": path})
             subject = "Registration confirmation"
 
@@ -142,7 +147,8 @@ def dashboard_analytics(request):
         "top_selling":top_selling_products,
         "order_stats": order_stats,
         "daily_totals":daily_sales,
-        "vendor":vendor
+        "vendor":vendor,
+        "title":"Analytics"
     }
 
     return render(request, "dashboard/analytics.html",context=context)
@@ -170,7 +176,7 @@ def shop_update(request):
         messages.info(request, "Shop Updated successfully")
         return redirect("shop_update")
     print(form.errors)
-    return render(request, "dashboard/shop_update.html",{"vendor":vendor})
+    return render(request, "dashboard/shop_update.html",{"vendor":vendor,"title":"Shop Update"})
 
 
 def dashboard_orders(request,status):
@@ -248,7 +254,7 @@ def dashboard_products(request):
     products = Product.objects.filter(vendor=vendor)
 
     return render(request, "dashboard/products.html",
-                  {"title": "My products", "products": products,"vendor":vendor})
+                  {"title": "My products", "products": products,"vendor":vendor,"title":"My Products"})
 
 
 # product create
@@ -267,7 +273,7 @@ def create_product(request):
     else:
         messages.error(request, f"{form.errors}")
     return render(request, "dashboard/products_create.html",
-                  {'categories': categories, 'current_category': None,"vendor":vendor})
+                  {'categories': categories, 'current_category': None,"vendor":vendor,"title":"Create new product"})
 
 
 # edit product

@@ -54,8 +54,8 @@ class MpesaPaymentView(APIView):
             "PartyA": phone,
             "PartyB": LipanaMpesaPassword.Business_short_code,
             "PhoneNumber": phone,
-            "CallBackURL": f"{SERVER_URL}mpesa/confirmation",
-            # "CallBackURL": "https://1238-41-90-65-86.in.ngrok.io/mpesa/confirmation",
+            # "CallBackURL": f"{SERVER_URL}mpesa/confirmation",
+            "CallBackURL": "https://0e82-41-89-96-9.in.ngrok.io/mpesa/confirmation",
             "AccountReference": "Meal-io",
             "TransactionDesc": "Pay for your meal order"
         }
@@ -72,6 +72,10 @@ class MpesaConfirmationView(APIView):
     """
     Receives mpesa payment response and if valid, saved it to the database
     """
+
+    def get(self, request):
+
+        return Response(request.body)
 
     @csrf_exempt
     def post(self, request):
