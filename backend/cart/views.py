@@ -66,6 +66,7 @@ class CartView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({"message": "Error creating the order"}, status=status.HTTP_400_BAD_REQUEST)
 
+
     def put(self, request):
         data = request.data
         print(data)

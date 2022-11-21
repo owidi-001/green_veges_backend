@@ -159,23 +159,25 @@ def shop_update(request):
 
     form = ShopForm(request.POST, request.FILES)
 
-    if request.POST and form.is_valid():
-        vendor.brand = form.cleaned_data.get("brand")
-
-        print(form.cleaned_data.get("brand"))
-        print(form.cleaned_data.get("tagline"))
-
-        if form.cleaned_data.get("brand"):
+    if request.POST:
+        if form.is_valid():
             vendor.brand = form.cleaned_data.get("brand")
-        if form.cleaned_data.get("tagline"):
-            vendor.tagline = form.cleaned_data.get("tagline")
-        if form.cleaned_data.get("logo"):
-            vendor.logo = form.cleaned_data.get("logo")
-        vendor.save()
 
-        messages.info(request, "Shop Updated successfully")
-        return redirect("shop_update")
-    print(form.errors)
+            print(form.cleaned_data.get("brand"))
+            print(form.cleaned_data.get("tagline"))
+
+            if form.cleaned_data.get("brand"):
+                vendor.brand = form.cleaned_data.get("brand")
+            if form.cleaned_data.get("tagline"):
+                vendor.tagline = form.cleaned_data.get("tagline")
+            if form.cleaned_data.get("logo"):
+                vendor.logo = form.cleaned_data.get("logo")
+            vendor.save()
+
+            messages.info(request, "Shop Updated successfully")
+            return redirect("shop_update")
+        else:
+            print(form.errors)
     return render(request, "dashboard/shop_update.html",{"vendor":vendor,"title":"Shop Update"})
 
 
@@ -263,15 +265,20 @@ def create_product(request):
     categories = Category.objects.all()
     form = ProductForm(request.POST, request.FILES)
     
-    if request.method == "POST" and form.is_valid():
-        product = form.save(commit=False)
-        product.vendor = get_object_or_404(Vendor, user=request.user)
-        product.save()
-        print("product saved")
-        messages.success(request, f"{product.label} added successfully")
-        return redirect('products')
-    else:
-        messages.error(request, f"{form.errors}")
+    if request.method == "POST":
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.vendor = get_object_or_404(Vendor, user=request.user)
+            category=get_object_or_404(Category,id=request.POST.get("category"))
+            if category:
+                product.category=category
+
+            product.save()
+            print("product saved")
+            messages.success(request, f"{product.label} added successfully")
+            return redirect('products')
+        else:
+            messages.error(request, f"{form.errors}")
     return render(request, "dashboard/products_create.html",
                   {'categories': categories, 'current_category': None,"vendor":vendor,"title":"Create new product"})
 
@@ -343,23 +350,24 @@ def dashboard_contact(request):
     form = ContactForm(request.POST, request.FILES)
     vendor = get_object_or_404(Vendor, user=request.user)
 
-    if request.POST and form.is_valid():
-        contact = form.save(commit=False)
-        contact.vendor = vendor
+    if request.POST:
+        if form.is_valid():
+            contact = form.save(commit=False)
+            contact.vendor = vendor
 
-        if form.cleaned_data.get("email"):
-            email = form.cleaned_data.get("email")
-        else:
-            email = vendor.user.email
+            if form.cleaned_data.get("email"):
+                email = form.cleaned_data.get("email")
+            else:
+                email = vendor.user.email
 
-        subject = form.cleaned_data.get("subject")
-        message = form.cleaned_data.get("message")
+            subject = form.cleaned_data.get("subject")
+            message = form.cleaned_data.get("message")
 
-        # Email the admin
-        EmailThead([settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
+            # Email the admin
+            EmailThead([settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
 
-        messages.info(request, "Help message received")
-        return redirect("analytics")
+            messages.info(request, "Help message received")
+            return redirect("analytics")
     return render(request, "dashboard/contact.html",
                   {"title": "Help contact","vendor":vendor})
 
