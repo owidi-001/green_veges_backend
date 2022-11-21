@@ -183,14 +183,14 @@ def dashboard_orders(request,status):
     vendor = get_object_or_404(Vendor, user=request.user)
     items = CartItem.objects.all()
 
-    if status== "P":
-        items = CartItem.objects.filter(status="P")
-    elif status == "T":
-        items = CartItem.objects.filter(status="T")
-    elif status == "F":
-        items = CartItem.objects.filter(status="F")
-    elif status == "C":
-        items = CartItem.objects.filter(status="C")
+    if status== "Pending":
+        items = CartItem.objects.filter(status="Pending")
+    elif status == "On Transit":
+        items = CartItem.objects.filter(status="On Transit")
+    elif status == "Completed":
+        items = CartItem.objects.filter(status="Completed")
+    elif status == "Cancelled":
+        items = CartItem.objects.filter(status="Cancelled")
     else:
         items = CartItem.objects.all()
 
@@ -214,7 +214,7 @@ def manage_order(request, id):
     status_color="#23AA49"
     riders=[]
 
-    if order.status=="P":
+    if order.status=="Pending":
         status_color="#f0b802"
         riders=Rider.objects.all()
 
@@ -228,7 +228,7 @@ def manage_order(request, id):
                 ride=OrderRider.objects.create(rider=rider,item=order)
                 if ride:
                     # update status to on transit
-                    order.status="T"
+                    order.status="On Transit"
                     status_color="##979899"
 
                     order.save()
@@ -239,9 +239,9 @@ def manage_order(request, id):
         order_rider=get_object_or_404(OrderRider,item=order)
         rider=order_rider.rider
 
-        if order.status == "T":
+        if order.status == "On Transit":
             status_color="##979899"
-        elif order.status == "C":
+        elif order.status == "Cancelled":
             status_color="#FF324B"        
 
     if order:

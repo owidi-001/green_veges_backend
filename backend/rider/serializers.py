@@ -11,10 +11,10 @@ class RiderSerializer(serializers.ModelSerializer):
 
 
 class CartItemRiderSerializer(serializers.ModelSerializer):
-    order = CartItemSerializer()
     rider = RiderSerializer()
+    item = CartItemSerializer()
 
     class Meta:
         model = OrderRider
-        fields = ["id", "rider", "order"]
+        fields = ["id", "rider", "item"]
 

@@ -1,3 +1,4 @@
+from cart.models import CartItem
 from cart.serializers import CartItemSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -7,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rider.forms import RiderForm
 from rider.models import Rider, OrderRider
-from rider.serializers import RiderSerializer
+from rider.serializers import CartItemRiderSerializer, RiderSerializer
 
 
 class RiderViews(APIView):
@@ -46,6 +47,6 @@ class RiderOrderViews(APIView):
 
     def get(self, request):
         rider = get_object_or_404(Rider, user=request.user)
-        orders = OrderRider.objects.filter(rider=rider)
-        serializer = CartItemSerializer(orders, many=True)
+        order_for_rider = OrderRider.objects.filter(rider=rider)
+        serializer = CartItemRiderSerializer(order_for_rider, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

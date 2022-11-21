@@ -62,7 +62,7 @@ class RegisterUser(APIView):
             subject = "Registration confirmation"
             # send_mail(message, [email_to])
 
-            EmailThead([email_to], message, subject).start()
+            # EmailThead([email_to], message, subject).start() # Uncomment on production
 
             return Response(data, status=200)
         else:

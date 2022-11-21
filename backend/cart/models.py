@@ -24,7 +24,7 @@ class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     STATUS = (
         ("Pending", "Pending"), ("Processing", "Processing"), ("Fulfilled", "Fulfilled"), ("Cancelled", "Cancelled"))
-    status = models.CharField(max_length=10, choices=STATUS, default="Pending")
+    status = models.CharField(max_length=20, choices=STATUS, default="Pending")
     date_ordered = models.DateTimeField(auto_now_add=timezone.now())
     location = models.ForeignKey(
         Location,
@@ -73,7 +73,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    status=models.CharField(max_length=1,choices=(("F","Completed"),("C","Cancelled"),("T","On Transit"),("P","Pending")),default="P")
+    status=models.CharField(max_length=20,choices=(("Completed","Completed"),("Cancelled","Cancelled"),("On Transit","On Transit"),("Pending","Pending")),default="Pending")
 
     class Meta:
         unique_together = ("cart", "product")

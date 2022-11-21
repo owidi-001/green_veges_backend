@@ -31,11 +31,11 @@ urlpatterns = [
     path("orders/", include("cart.urls")),
     # path('mpesa/', include('mpesa.urls')),
 
-    path('vendors/', include('vendor.urls')),
-    path('riders/', include('rider.urls')),
+    path('', include('vendor.urls')),
+    path('', include('rider.urls')),
 
     # Documentation
-    path('', include_docs_urls(title="Green Veges API")),
+    path('api/v1/', include_docs_urls(title="Green Veges API")),
 ]
 
 if settings.DEBUG:

@@ -33,8 +33,9 @@ class CartView(APIView):
     """
 
     def post(self, request):
+        print("The cart order service accessed")
         data = request.data
-
+        print(data)
         location = data["location"]
         delivery_location = Location.objects.get_or_create(name=location["name"],
                                                            block_name=location["block_name"],
@@ -67,29 +68,35 @@ class CartView(APIView):
 
     def put(self, request):
         data = request.data
-        order = get_object_or_404(Cart, id=data["order"])
+        print(data)
+        order = get_object_or_404(CartItem, id=data["order"])
 
         # Check if data has location
-        if data["location"]:
-            name = data["location"]["name"]
-            block_name = data["location"]["block_name"]
-            floor_number = data["location"]["floor_number"]
-            room_number = data["location"]["room_number"]
+        try:
+            if data["location"]:
+                name = data["location"]["name"]
+                block_name = data["location"]["block_name"]
+                floor_number = data["location"]["floor_number"]
+                room_number = data["location"]["room_number"]
 
-            location = Location.objects.update_or_create(name=name, block_name=block_name, floor_number=floor_number,
-                                                         room_number=room_number)
+                location = Location.objects.update_or_create(name=name, block_name=block_name, floor_number=floor_number,
+                                                            room_number=room_number)
 
-            # The above returns a tuple of two, the object and bool if created
-            # print(location)
+                # The above returns a tuple of two, the object and bool if created
+                # print(location)
 
-            if location:
-                order.location = location[0]
-            else:
-                print(location)
+                if location:
+                    order.location = location[0]
+                else:
+                    print(location)
+        except:
+            pass
 
         if order:
             order.status = data["status"]
             order.save()
+            print("Order saved")
+            
             return Response(status=status.HTTP_202_ACCEPTED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

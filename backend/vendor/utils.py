@@ -36,7 +36,7 @@ def pending_orders(request):
     vendor_items=vendor_orders(request)
 
     # filters only complete orders
-    pending_items=[item for item in vendor_items if item.status=="P"]
+    pending_items=[item for item in vendor_items if item.status=="Pending"]
 
     try:
         return len(pending_items)
@@ -83,7 +83,7 @@ def total_earnings(request):
     vendor_items=vendor_orders(request)
 
     # filters only complete orders
-    delivered_items=[item for item in vendor_items if item.status=="F"]
+    delivered_items=[item for item in vendor_items if item.status=="Completed"]
 
     try:
         total=sum([item.get_total for item in delivered_items])
@@ -97,10 +97,10 @@ def order_status(request):
     vendor_items=vendor_orders(request)
 
     # order stats count
-    delivered=len([item for item in vendor_items if item.status=="F"])
-    on_transit=len([item for item in vendor_items if item.status=="T"])
-    pending=len([item for item in vendor_items if item.status=="P"])
-    cancelled=len([item for item in vendor_items if item.status=="C"])
+    delivered=len([item for item in vendor_items if item.status=="Completed"])
+    on_transit=len([item for item in vendor_items if item.status=="On Transit"])
+    pending=len([item for item in vendor_items if item.status=="Pending"])
+    cancelled=len([item for item in vendor_items if item.status=="Cancelled"])
     
     if delivered == on_transit == pending == cancelled == 0:
         delivered=1
