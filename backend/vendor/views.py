@@ -149,6 +149,8 @@ def dashboard_analytics(request):
         "daily_totals":daily_sales,
         "vendor":vendor,
         "title":"Analytics"
+        # new data
+        ""
     }
 
     return render(request, "dashboard/analytics.html",context=context)

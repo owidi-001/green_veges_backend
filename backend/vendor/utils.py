@@ -109,11 +109,10 @@ def order_status(request):
         cancelled=1
 
     order_stats = [
-        # ['Status','Order count',{"role":'style'}],
-        ['Delivered', delivered,"#23AA49"],
-        ['On Transit', on_transit,"#979899"],
-        ['Cancelled', cancelled,"#FF324B"],
-        ['Pending', pending,"#f0b802"],
+        ['Delivered', delivered],
+        ['On Transit', on_transit],
+        ['Cancelled', cancelled],
+        ['Pending', pending],
     ]
 
     return order_stats

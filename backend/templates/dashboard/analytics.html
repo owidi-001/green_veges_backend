@@ -68,68 +68,106 @@
             <div class="title">
                 Daily Sales
             </div>
-            <div id="barChart"></div>
+            <!-- <div id="bar-chart"></div> -->
+            <canvas id="bar-chart" width="600px" height="250px"></canvas> 
 
         </div>
         <div class="pie-graph">
             <div class="title">
                 Order Status
             </div>
-            <div id="pieChart"></div>
+            <!-- <div id="polar-chart"></div> -->
+            <canvas id="polar-chart" width="250px" height="250px"></canvas> 
         </div>
     </div>
 </div>
 
+
 <!-- pie graph -->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
+<script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
 <script type="text/javascript">
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
 
-    function drawChart() {
-        const order_data = JSON.parse("{{order_stats|escapejs}}");
-        var newArr=[['Status','Order count',{role:'style'}]].concat(order_data);
-        console.log(newArr)
-        var data = google.visualization.arrayToDataTable(newArr);
+    var polar_chart = document.getElementById('polar-chart').getContext('2d');
+    var barChart = document.getElementById('bar-chart').getContext('2d');
 
-        var options = {
-            // title: '% of status fulfilment',
-            pieHole: 0.2,
-            outerWidth: 500
-        };
+    const order_stats = JSON.parse("{{order_stats|escapejs}}");
+    const sales_data = JSON.parse("{{daily_totals|escapejs}}");
 
-        var chart = new google.visualization.PieChart(document.getElementById('pieChart'));
-        chart.draw(data, options);
-    }
+    stats_labels = []
+    stats_data = []
+
+    order_stats.forEach(stat => {
+        stats_labels.push(stat[0]);
+        stats_data.push(stat[1]);
+    });
+
+
+    console.log(order_stats)
+    console.log(sales_data)
+
+    const dataPolar = {
+
+        labels: stats_labels,
+        datasets: [{
+            label: 'Order statistics',
+            data: stats_data,
+            // data: [8, 5],
+            backgroundColor: [
+                '#23AA49',
+                '#979899',
+                '#FF324B',
+                '#f0b802',
+            ],
+        }]
+    };
+
+    var myChart = new Chart(polar_chart, {
+        type: 'polarArea',
+        data: dataPolar,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+
+    sales_labels = [];
+    sales_data_list = [];
+
+    sales_data.forEach(stat => {
+        sales_labels.push(stat[0]);
+        sales_data.push(stat[1]);
+    });
+
+
+    const dataBar = {
+
+        labels: sales_labels,
+        datasets: [{
+            label: 'Daily Sales',
+            data: sales_data_list,
+            backgroundColor: [
+                '#23AA49',
+            ],
+        }]
+    };
+
+    var myChart = new Chart(barChart, {
+        type: 'bar',
+        data: dataBar,
+        options: {
+            response: true,
+        }
+    });
 </script>
 
 
-<script>
-    google.charts.load('current', { packages: ['corechart', 'bar'] });
-    google.charts.setOnLoadCallback(dailySalesBars);
 
-    function dailySalesBars() {
-        const sales_data = JSON.parse("{{daily_totals|escapejs}}");
-        console.log(sales_data)
-        var data = google.visualization.arrayToDataTable(sales_data);
 
-        var materialOptions = {
-            chart: {
-                title: 'Summation of daily sales totals',
-                // subtitle: 'Based on order fulfilment'
-            },
-            hAxis: {
-                title: 'Sales Totals',
-                minValue: 0,
-            },
-            vAxis: {
-                title: 'Date'
-            },
-            bars: 'vertical'
-        };
-        var materialChart = new google.charts.Bar(document.getElementById('barChart'));
-        materialChart.draw(data, materialOptions);
-    }
-</script>
 
 {% endblock main%}
