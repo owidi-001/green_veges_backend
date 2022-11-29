@@ -129,6 +129,7 @@ main .content{
     width: 85%;
     background: var(--light);
     height: calc(100vh - 3.25em);
+    overflow-y:scroll;
     padding: 1em;
 }
 

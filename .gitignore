@@ -1,4 +1,5 @@
 env
+venv
 backend/backend/secrets.py
 backend/backend/.env
 backend/staticfiles

@@ -32,49 +32,43 @@ body {
 
 
 /* orders */
-.orders_table{
+table{
+    margin-top: 2em;
+    border: 1px solid var(--primary);
+    border-collapse: collapse;
+
     width: 100%;
     height: calc(100% - 4em);
     overflow-y: scroll;
     background: var(--white);
-    margin-top: 1em;
     padding: 2em;
 }
-.orders_table table{
-    border-collapse: collapse;
-    width: 100%;
-
-}
-.orders_table table thead{
+thead{
     background: var(--primary);
     color: var(--light);
     text-transform: uppercase;
 }
-.orders_table table th{
-    border: 1px solid var(--light);
+th,td{
+    padding: .75em;
+    border: 1px solid var(--primary);
+}
+td{
     text-align: center;
-    padding: .75rem;
 }
-.orders_table table tbody tr:hover{
-    background-color: var(--gradient);
+/*
+.text{
+    text-align: left;
+}*/
+
+tbody tr:nth-child(odd){
+    background: var(--gradient);
 }
-.orders_table table tr:nth-child(even){
+tbody tr:nth-child(odd):hover{
     background-color: var(--light);
 }
-.orders_table table td{
-    /* border: 1px solid var(--secondary); */
-    text-align: center;
+tbody tr:nth-child(even):hover{
+    background-color: var(--gradient);
 }
-.orders_table table td:nth-last-child(1){
-    /* background: #FF324B; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.orders_table table td:nth-last-child(1) a{
-    margin: .2em!important;
-}
-
 .order_detail .product{
     background: var(--secondary);
     display: flex;

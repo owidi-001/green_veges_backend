@@ -241,6 +241,8 @@ form title {
 
 /* Image picker */
 .upload-image {
+    width:100%;
+    text-align:center;
     color: var(--primary);
     font-size: 16px;
     padding: 12px 35px;
