@@ -1,9 +1,10 @@
 {% load static %}
 
 <div class="card">
-	{% if new %}
+	{% if product.is_new  %}
 		<div class="badge">New</div>
 	{% endif %}
+
 	<div class="thumb">
 		<img src="{{product.image.url}}" alt="Product Image">
 	</div>

@@ -67,28 +67,28 @@
                 </div>
                 <hr>
                 <div class="nav-group">
-                    <h2><a href="{% url 'vendor_orders' 'P' %}">Orders</a></h2>
+                    <h2><a href="{% url 'vendor_orders' 'Pending' %}">Orders</a></h2>
                     <ul class="nav-list">
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' 'P' %}">
+                            <a href="{% url 'vendor_orders' 'Pending' %}">
                                 <i class="bi bi-table"></i>
-                                <p>Available</p>
+                                <p>Pending</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' 'T' %}">
+                            <a href="{% url 'vendor_orders' 'On Transit' %}">
                                 <i class="bi bi-truck"></i>
                                 <p>On Transit</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' 'F' %}">
+                            <a href="{% url 'vendor_orders' 'Completed' %}">
                                 <i class="bi bi-bag-check-fill"></i>
                                 <p>Completed</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'vendor_orders' 'C' %}">
+                            <a href="{% url 'vendor_orders' 'Cancelled' %}">
                                 <i class="bi bi-bag-x-fill"></i>
                                 <p>Cancelled</p>
                             </a>
@@ -108,7 +108,7 @@
                         <li class="nav-item">
                             <a href="{% url 'create_product'%}">
                                 <i class="bi bi-file-plus-fill"></i>
-                                <p>Add product</p>
+                                <p>New product</p>
                             </a>
                         </li>
                     </ul>

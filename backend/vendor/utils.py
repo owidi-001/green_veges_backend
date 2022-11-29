@@ -136,7 +136,7 @@ def daily_sales_totals(request):
         date_totals[str(sale_date)]=float(totals)
 
     data=[
-        ['Date', 'Sales total']
+        # ['Date', 'Sales total']
     ]
     x=[[k,v] for k,v in date_totals.items()]
     x.reverse()

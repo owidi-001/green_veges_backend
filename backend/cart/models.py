@@ -23,7 +23,7 @@ class Location(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     STATUS = (
-        ("Pending", "Pending"), ("Processing", "Processing"), ("Fulfilled", "Fulfilled"), ("Cancelled", "Cancelled"))
+        ("Pending", "Pending"), ("On Transit", "On Transit"), ("Completed", "Completed"), ("Cancelled", "Cancelled"))
     status = models.CharField(max_length=20, choices=STATUS, default="Pending")
     date_ordered = models.DateTimeField(auto_now_add=timezone.now())
     location = models.ForeignKey(

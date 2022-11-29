@@ -1,4 +1,6 @@
+from datetime import date
 from django.db import models
+from django.utils import timezone
 
 from vendor.models import Vendor
 
@@ -28,9 +30,14 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     stock = models.PositiveIntegerField(verbose_name='stock', default=1)
+    created_at = models.DateTimeField(auto_now_add=True,blank=True,null=True)
 
     def __str__(self):
         return f"{self.label}"
+
+    @property
+    def is_new(self):
+        return (date.today() - self.created_at.date()).days <= 2
 
     class Meta:
         verbose_name = 'product'

@@ -149,7 +149,6 @@ def dashboard_analytics(request):
         "daily_totals":daily_sales,
         "vendor":vendor,
         "title":"Analytics"
-        # new data
         ""
     }
 
@@ -185,9 +184,9 @@ def shop_update(request):
 
 def dashboard_orders(request,status):
     vendor = get_object_or_404(Vendor, user=request.user)
-    items = CartItem.objects.all()
+    items = None
 
-    if status== "Pending":
+    if status == "Pending":
         items = CartItem.objects.filter(status="Pending")
     elif status == "On Transit":
         items = CartItem.objects.filter(status="On Transit")
@@ -205,7 +204,7 @@ def dashboard_orders(request,status):
             # if item.order not in orders:
             orders.append(item)
 
-    return render(request, "dashboard/orders.html",{"title": "orders", "orders": orders,"vendor":vendor})
+    return render(request, "dashboard/orders.html",{"title": "Orders", "orders": orders,"vendor":vendor})
 
 
 def manage_order(request, id):
@@ -229,11 +228,11 @@ def manage_order(request, id):
             if rider_user:
                 rider=get_object_or_404(Rider,user=rider_user)
                 # Create rider dispatch
-                ride=OrderRider.objects.create(rider=rider,item=order)
+                ride=OrderRider.objects.get_or_create(rider=rider,item=order)[0]
                 if ride:
                     # update status to on transit
                     order.status="On Transit"
-                    status_color="##979899"
+                    status_color="#979899"
 
                     order.save()
                     messages.success(request,"Order dispatched successfully")
@@ -244,7 +243,7 @@ def manage_order(request, id):
         rider=order_rider.rider
 
         if order.status == "On Transit":
-            status_color="##979899"
+            status_color="#979899"
         elif order.status == "Cancelled":
             status_color="#FF324B"        
 
@@ -256,6 +255,9 @@ def manage_order(request, id):
 def dashboard_products(request):
     vendor = get_object_or_404(Vendor, user=request.user)
     products = Product.objects.filter(vendor=vendor)
+
+    for product in products:
+        print(product.is_new)
 
     return render(request, "dashboard/products.html",
                   {"title": "My products", "products": products,"vendor":vendor,"title":"My Products"})
