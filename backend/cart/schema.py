@@ -31,6 +31,16 @@ class CartSchema(AutoSchema):
         return manual_fields + extra_fields
 
 
+class OrderItemSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        fields = [
+            coreapi.Field("email", required=True, location="form"),
+            coreapi.Field("password", required=True, location="form"),
+        ]
+        manual_fields = super().get_manual_fields(path, method)
+        return fields + manual_fields
+
+
 class CartDetailSchema(AutoSchema):
     def get_manual_fields(self, path, method):
         extra_fields = []

@@ -23,6 +23,7 @@ class CartView(APIView):
 
     def get(self, request):
         orders = Cart.objects.all().order_by("-date_ordered")
+        orders=[order for order in orders if order.user==request.user]
         # print(orders)
         serializer = CartSerializer(orders, many=True)
 
@@ -48,22 +49,25 @@ class CartView(APIView):
 
         if cart:
             cart.save()
-            print("cart saved")
+            # print("cart saved")
             # Save cart items
             items = data["items"]
 
             for item in items:
                 product = get_object_or_404(Product, id=item["product"])
+                # print("product found")
                 if product:
                     CartItem.objects.create(cart=cart, product=product, quantity=item["quantity"]).save()
                     product.stock -= item["quantity"]
                     product.save()
-                # print("Order item saved")
+                    # print("Order item saved")
 
             # Trigger payment
-            serializer = CartSerializer(cart)
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            cart_saved_items=CartItem.objects.filter(cart=cart)
+            serializer = CartItemSerializer(cart_saved_items,many=True)
+            print(serializer.data)
+            return Response(status=status.HTTP_201_CREATED)
+            # return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({"message": "Error creating the order"}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -116,7 +120,9 @@ class CartItemView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        items = CartItem.objects.all()
+        items=CartItem.objects.all()
+        items=[ item for item in items if item.get_customer==request.user ]
+        # items = CartItem.objects.filter(get_customer=request.user)
         serializer = CartItemSerializer(items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

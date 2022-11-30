@@ -6,8 +6,8 @@ from .models import Rider, VendorRider, OrderRider
 
 
 class RiderAdmin(admin.ModelAdmin):
-    list_filter = ['user', 'license']
-    list_display = ['user', "license"]
+    list_filter = ['user','brand' ,'license','national_id']
+    list_display = ['user', "license",'national_id']
     search_fields = ["license"]
 
 

@@ -10,6 +10,12 @@ class ProductSchema(AutoSchema):
             extra_fields = [
                 coreapi.Field("license", required=True, location="form",
                               schema=coreschema.Object(required=True, description="Driver license or rider permit")),
+                coreapi.Field("national_id", required=True, location="form",
+                              schema=coreschema.Object(required=True, description="National Id")),
+                coreapi.Field("dob", required=True, location="form",
+                              schema=coreschema.Object(required=True, description="Date of birth")),
+                coreapi.Field("brand", required=True, location="form",
+                              schema=coreschema.Object(required=True, description="Brand name")),
             ]
 
         if method.upper() == "PUT":

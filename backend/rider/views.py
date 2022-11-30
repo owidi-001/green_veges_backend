@@ -24,17 +24,26 @@ class RiderViews(APIView):
     def post(self, request):
         print(request.data)
         form = RiderForm(request.POST)
+        
+        # print(form.is_valid())
 
-        if form.is_valid():
-            rider = form.save(commit=False)
-            rider.user = request.user
+        brand=request.data.get("brand")
+        dob=request.data.get("dob")
+        national_id=request.data.get("national_id")
+        license=request.data.get("license")
+        
+        # print("Pre rider creation")
+        rider=Rider.objects.get_or_create(user=request.user,brand=brand,dob=dob,national_id=national_id,license=license)[0]
+        # print("Post rider creation")
 
+        if rider:
             rider.save()
             serializer = RiderSerializer(rider)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(form.errors)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 
 class RiderOrderViews(APIView):
@@ -47,6 +56,8 @@ class RiderOrderViews(APIView):
 
     def get(self, request):
         rider = get_object_or_404(Rider, user=request.user)
+
         order_for_rider = OrderRider.objects.filter(rider=rider)
+
         serializer = CartItemRiderSerializer(order_for_rider, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

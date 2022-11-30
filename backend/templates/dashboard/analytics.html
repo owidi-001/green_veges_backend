@@ -6,32 +6,36 @@
 
 <!-- info cards -->
 <div class="info_cards">
-    <div class="info_card">
-        <div class="container">
-            <div class="title">
-                Order Stream
-            </div>
-            <div class="body">
-                <i class="bi bi-bag-fill" style="color: #23AA49;"></i>
-                <p class="value">
-                    {{total_orders}}
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="info_card">
-        <div class="container">
-            <div class="title">
-                Pending orders
-            </div>
-            <div class="body">
-                <i class="bi bi-bag-dash-fill" style="color:#FF324B"></i>
-                <p class="value" style="color: #FF324B;">
-                    {{pending_orders}}
-                </p>
+    <a href="{% url 'vendor_orders' 'Completed' %}">
+        <div class="info_card">
+            <div class="container">
+                <div class="title">
+                    Order Stream
+                </div>
+                <div class="body">
+                    <i class="bi bi-bag-fill" style="color: #23AA49;"></i>
+                    <p class="value">
+                        {{total_orders}}
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
+    </a>
+    <a href="{% url 'vendor_orders' 'Pending' %}">
+        <div class="info_card">
+            <div class="container">
+                <div class="title">
+                    Pending orders
+                </div>
+                <div class="body">
+                    <i class="bi bi-bag-dash-fill" style="color:#FF324B"></i>
+                    <p class="value" style="color: #FF324B;">
+                        {{pending_orders}}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </a>
 
     <div class="info_card">
         <div class="container">
@@ -68,8 +72,8 @@
             <div class="title">
                 Daily Sales
             </div>
-            <!-- <div id="bar-chart"></div> -->
-            <canvas id="bar-chart" width="600px" height="250px"></canvas> 
+            <!-- <div id="line-chart"></div> -->
+            <canvas id="line-chart" width="600px" height="250px"></canvas> 
 
         </div>
         <div class="pie-graph">
@@ -77,7 +81,7 @@
                 Order Status
             </div>
             <!-- <div id="polar-chart"></div> -->
-            <canvas id="polar-chart" width="250px" height="250px"></canvas> 
+            <canvas id="donut-chart" width="250px" height="250px"></canvas> 
         </div>
     </div>
 </div>
@@ -88,8 +92,8 @@
 <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
 <script type="text/javascript">
 
-    var polar_chart = document.getElementById('polar-chart').getContext('2d');
-    var barChart = document.getElementById('bar-chart').getContext('2d');
+    var donut_chart = document.getElementById('donut-chart').getContext('2d');
+    var lineChart = document.getElementById('line-chart').getContext('2d');
 
     const order_stats = JSON.parse("{{order_stats|escapejs}}");
     const sales_data = JSON.parse("{{daily_totals|escapejs}}");
@@ -122,8 +126,8 @@
         }]
     };
 
-    var myChart = new Chart(polar_chart, {
-        type: 'polarArea',
+    var myChart = new Chart(donut_chart, {
+        type: 'doughnut',
         data: dataPolar,
         options: {
             responsive: true,
@@ -145,7 +149,7 @@
     });
 
 
-    const dataBar = {
+    const dataLines = {
 
         labels: sales_labels,
         datasets: [{
@@ -157,9 +161,9 @@
         }]
     };
 
-    var myChart = new Chart(barChart, {
-        type: 'bar',
-        data: dataBar,
+    var myChart = new Chart(lineChart, {
+        type: 'line',
+        data: dataLines,
         options: {
             response: true,
         }

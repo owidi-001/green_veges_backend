@@ -31,13 +31,13 @@
         <div class="form-group">
             <label for="description">Food description</label>
             <textarea type="text" name="description" id="description" value="{{product.description}}"
-                rows="4"></textarea>
+                rows="4">{{product.description}}</textarea>
         </div>
         <div class="form-group">
             <label for="category">Product category</label>
             <select name="category" id="category">
                 <option value="{{product.category.id}}" selected="selected">
-                    {{product.category.name}}
+                    {{product.category}}
                 </option>
                 {% for category in categories %}
                 <option value="{{category.id}}" {% if category == current_category %} selected="selected" {% endif %}>

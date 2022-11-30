@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
-from cart.models import CartItem
+from cart.models import Cart, CartItem
 
 from product.forms import ProductForm
 from product.models import Category
@@ -111,7 +111,7 @@ def create_shop(request):
             print(form.errors)
             messages.error(request, form.errors)
     print("Failed to get into post body")
-    return render(request, "auth/shop.html")
+    return render(request, "auth/shop.html",{"title": "Create your shop"})
 
 
 def dashboard_analytics(request):
@@ -210,9 +210,14 @@ def dashboard_orders(request,status):
 def manage_order(request, id):
 
     vendor = get_object_or_404(Vendor, user=request.user)
-
+    
     order = get_object_or_404(CartItem, id=id)
+
+    cart=get_object_or_404(Cart,id=order.cart)
+    location=cart.location
+
     rider = None
+
 
     status_color="#23AA49"
     riders=[]
@@ -228,7 +233,7 @@ def manage_order(request, id):
             if rider_user:
                 rider=get_object_or_404(Rider,user=rider_user)
                 # Create rider dispatch
-                ride=OrderRider.objects.get_or_create(rider=rider,item=order)[0]
+                ride=OrderRider.objects.get_or_create(rider=rider,item=order,location=location)[0]
                 if ride:
                     # update status to on transit
                     order.status="On Transit"
@@ -334,7 +339,7 @@ def update_product(request, id):
 
 
     return render(request, "dashboard/products_edit.html",
-                  {'product': product, 'categories': categories, 'current_category': product.category,"vendor":vendor
+                  {'product': product, 'categories': categories, 'current_category': product.category,"vendor":vendor,"title":"Update product"
                    })
 
 
