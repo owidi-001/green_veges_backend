@@ -1,4 +1,5 @@
 
+from datetime import datetime
 from json import dumps
 from django.conf import settings
 from django.contrib import messages
@@ -6,7 +7,11 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
 from cart.models import Cart, CartItem
-
+from xhtml2pdf import pisa
+from django.template.loader import get_template
+from io import BytesIO
+from django.views import View
+from django.http import HttpResponse
 from product.forms import ProductForm
 from product.models import Category
 from product.models import Product
@@ -155,6 +160,76 @@ def dashboard_analytics(request):
     return render(request, "dashboard/analytics.html",context=context)
 
 
+def render_to_pdf(template_src, context_dict={}):
+	template = get_template(template_src)
+	html  = template.render(context_dict)
+	result = BytesIO()
+	pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+	if not pdf.err:
+		return HttpResponse(result.getvalue(), content_type='application/pdf')
+	return None
+
+def report(request):
+    vendor = get_object_or_404(Vendor, user=request.user)
+    
+    items = CartItem.objects.all()
+    orders=[]
+
+    for item in items:
+        if item.product.vendor == vendor:
+            orders.append(item)
+
+    sales_total=total_earnings(request)
+
+    context={
+        "vendor":vendor,
+        "orders":orders,
+        "start_date":datetime.today(),
+        "end_date":datetime.today(),
+        "sales_total":sales_total
+    }
+
+    pdf = render_to_pdf('dashboard/report.html',context)
+
+    response = HttpResponse(pdf, content_type='application/pdf')
+    filename = "Invoice_%s.pdf" %("12341231")
+    content = "attachment; filename='%s'" %(filename)
+    response['Content-Disposition'] = content
+    return response
+
+    # return render(request,"dashboard/report.html",context)
+
+
+
+
+# #Automaticly downloads to PDF file
+
+# class DownloadPDF(View):
+#     def get(self, request, *args, **kwargs):
+
+
+#         data = {
+#         "company": "Dennnis Ivanov Company",
+#         "address": "123 Street name",
+#         "city": "Vancouver",
+#         "state": "WA",
+#         "zipcode": "98663",
+
+
+#         "phone": "555-555-2345",
+#         "email": "youremail@dennisivy.com",
+#         "website": "dennisivy.com",
+#         }
+        
+#         pdf = render_to_pdf('app/report.html', data)
+
+#         response = HttpResponse(pdf, content_type='application/pdf')
+#         filename = "Invoice_%s.pdf" %("12341231")
+#         content = "attachment; filename='%s'" %(filename)
+#         response['Content-Disposition'] = content
+#         return response
+
+
 def shop_update(request):
     vendor = get_object_or_404(Vendor, user=request.user)
 
@@ -183,7 +258,7 @@ def shop_update(request):
 
 
 def dashboard_orders(request,status):
-    vendor = get_object_or_404(Vendor, user=request.user)
+    vendor = get_object_or_404(Vendor, user=request.user.id)
     items = None
 
     if status == "Pending":
@@ -213,8 +288,8 @@ def manage_order(request, id):
     
     order = get_object_or_404(CartItem, id=id)
 
-    cart=get_object_or_404(Cart,id=order.cart)
-    location=cart.location
+    # cart=get_object_or_404(Cart,id=order.cart)
+    location=order.cart.location
 
     rider = None
 
@@ -227,22 +302,20 @@ def manage_order(request, id):
         riders=Rider.objects.all()
 
         if request.method=="POST":
-            # order=request.order
             order=get_object_or_404(CartItem,id=request.POST.get("order")) # value is hidden input
-            rider_user=get_object_or_404(User,email=request.POST.get("rider"))
-            if rider_user:
-                rider=get_object_or_404(Rider,user=rider_user)
-                # Create rider dispatch
-                ride=OrderRider.objects.get_or_create(rider=rider,item=order,location=location)[0]
-                if ride:
-                    # update status to on transit
-                    order.status="On Transit"
-                    status_color="#979899"
+            
+            rider=get_object_or_404(Rider,id=request.POST.get("rider"))
+            # Create rider dispatch
+            ride=OrderRider.objects.get_or_create(rider=rider,item=order,location=location)[0]
+            if ride:
+                # update status to on transit
+                order.status="On Transit"
+                status_color="#979899"
 
-                    order.save()
-                    messages.success(request,"Order dispatched successfully")
-                    # Order dispatched, redirect to analytics
-                    # return redirect("analytics")
+                order.save()
+                messages.success(request,"Order dispatched successfully")
+                # Order dispatched, redirect to analytics
+                # return redirect("analytics")
     else:
         order_rider=get_object_or_404(OrderRider,item=order)
         rider=order_rider.rider

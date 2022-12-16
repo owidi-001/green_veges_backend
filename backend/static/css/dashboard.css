@@ -147,3 +147,14 @@ main .content .order-detail{
     justify-content: center;
     margin: auto;
 }
+
+/* address */
+address{
+    font-family: 'Courier New', Courier, monospace;
+}
+address b{
+    padding-right: .5em;
+}
+address span{
+    font-family: monospace;
+}

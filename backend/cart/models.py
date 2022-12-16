@@ -74,6 +74,8 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     status=models.CharField(max_length=20,choices=(("Completed","Completed"),("Cancelled","Cancelled"),("On Transit","On Transit"),("Pending","Pending")),default="Pending")
+    date=models.DateTimeField(auto_now_add=timezone.now())
+    time = models.TimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("cart", "product")

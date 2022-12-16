@@ -1,0 +1,120 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{% static '/css/report.css'%}">
+</head>
+
+<body>
+
+    <header>
+        <div class="row">
+
+            <div class="col-md-6 start">
+                <div class="img-container">
+                    <!-- <img src="{{vendor.logo.url}}" alt="Logo" /> -->
+                    <img src="{% static 'images/logo.png'%}" alt="">
+                </div>
+                <h2>{{vendor.brand}}</h2>
+                <p><span>Email:</span> {{vendor.user.email}}</p>
+                <p><span>Phone:</span>{{vendor.user.phone_number}}</p>
+                <!-- <p>Phone number</p> -->
+            </div>
+
+            <div class="col-md-6 end">
+                <h1>INVOICE</h1>
+                <br><br>
+                <div class="row">
+                    <div class="col">
+                        <span>
+                            Start:
+                        </span>
+                    </div>
+                    <div class="col">
+                        {{start_date}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <span>End: </span>
+                    </div>
+                    <div class="col">
+                        {{end_date}}
+                    </div>
+                </div>
+                <div class="row footer">
+                    <div class="col">
+                        Total:
+                    </div>
+                    <div class="col">
+                        KES {{sales_total}}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Item
+                    </th>
+                    <th>Quantity</th>
+                    <th>rate</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{order.product.label}}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{order.product.unit_price}}</td>
+                    <td>{{order.get_total}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <div class="wrapper">
+                <div class="row">
+                    <div class="col">
+                        Subtotal:
+                    </div>
+                    <div class="col">
+                        KES {{ sales_total }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        Tax(0%):
+                    </div>
+                    <div class="col">
+                        KES 0.00
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        Total:
+                    </div>
+                    <div class="col">
+                        KES {{ sales_total }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

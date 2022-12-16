@@ -35,6 +35,10 @@
             </a>
         </div>
         <div class="nav-end">
+            <div class="report_btn" id="report_btn">
+                <!-- <i class="bi bi-cloud-download"></i> Print Report -->
+                <a href="{% url 'report_download' %}"><i class="bi bi-printer"></i> Print report</a>
+            </div>
             <div class="date_today" id="date-today">
             </div>
 
@@ -114,6 +118,7 @@
                     </ul>
                 </div>
                 <hr>
+                
                 <div class="nav-group">
                     <h2><a href="{% url 'contact'%}">Contact</a></h2>
                     <ul class="nav-list">

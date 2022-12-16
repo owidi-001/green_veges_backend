@@ -34,10 +34,10 @@
             </div>
 
             <address>
-                Name: {{order.cart.get_address_name}}
-                Block name: {{order.cart.get_address_block}} <br>
-                Floor: {{order.cart.get_address_floor}}
-                Room: {{order.cart.get_address_room}}
+                <b>Placemark: </b> <span>{{order.cart.get_address_name}}</span> <br>
+                <b>Building Name: </b> <span>{{order.cart.get_address_block}}</span> <br>
+                <b>Floor Number: </b> <span>{{order.cart.get_address_floor}}</span> <br>
+                <b>Room Number: </b> <span>{{order.cart.get_address_room}}</span> <br>
             </address>
 
             <div class="form-group">
@@ -52,7 +52,7 @@
                         -- SELECT RIDER --
                     </option>
                     {% for rider in riders %}
-                    <option value="{{rider}}">
+                    <option value="{{rider.id}}">
                         {{rider}}
                     </option>
                     {% endfor %}

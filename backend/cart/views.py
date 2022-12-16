@@ -72,6 +72,7 @@ class CartView(APIView):
 
 
     def put(self, request):
+
         data = request.data
         print(data)
         order = get_object_or_404(CartItem, id=data["order"])
@@ -121,7 +122,8 @@ class CartItemView(APIView):
 
     def get(self, request):
         items=CartItem.objects.all()
-        items=[ item for item in items if item.get_customer==request.user ]
+        print(items)
+        items=[ item for item in items if item.get_customer == request.user ]
         # items = CartItem.objects.filter(get_customer=request.user)
         serializer = CartItemSerializer(items, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

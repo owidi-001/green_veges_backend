@@ -23,6 +23,8 @@ class CartItemAdmin(admin.ModelAdmin):
         "status",
         "product",
         "quantity",
+        "date",
+        "time",
     ]
     list_filter = ["cart",
                    "product",

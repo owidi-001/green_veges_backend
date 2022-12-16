@@ -61,3 +61,21 @@ class RiderOrderViews(APIView):
 
         serializer = CartItemRiderSerializer(order_for_rider, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self,request):
+        import json
+
+        data=json.loads(request.body.decode('utf-8'))
+        
+        print(data)
+
+        order=get_object_or_404(CartItem,id=data["order"])
+
+        if order:
+            print(order.product.label)
+
+            order.status=data["status"]
+            order.save()
+            print("order saved")
+            return Response(status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

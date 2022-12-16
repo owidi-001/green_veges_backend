@@ -10,12 +10,13 @@
         <thead>
             <tr>
                 <th>
-                    Order number
+                    Item
                 </th>
                 <th>Date ordered</th>
-                <th>Fulfilment Status</th>
+                <th>Time ordered</th>
+                <th>Fulfilment</th>
                 <th>Customer</th>
-                <th>Order Quantity</th>
+                <th>Quantity</th>
                 <th>Order Total(KES)</th>
                 <th>Actions</th>
             </tr>
@@ -23,8 +24,9 @@
         <tbody>
             {% for order in orders %}
             <tr>
-                <td># {{order.id}} {{order.user.email|capfirst}} {{order.customer.last_name|capfirst}}</td>
+                <td>{{order.product.label|capfirst}}</td>
                 <td>{{order.cart.date}}</td>
+                <td>{{order.time}}</td>
                 <td>{{order.status}}</td>
                 <td>{{order.cart.user.email}}</td>
                 <td>{{order.quantity}}</td>

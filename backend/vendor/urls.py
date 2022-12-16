@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from .views import (dashboard_register, dashboard_login, dashboard_analytics, dashboard_products, dashboard_contact, manage_order, \
+from .views import (dashboard_register, dashboard_login, dashboard_analytics, dashboard_products, dashboard_contact, manage_order, report, \
                     update_product, create_product, dashboard_orders, delete_product, VendorViews,
                     shop_update, create_shop)
 
@@ -30,4 +30,7 @@ urlpatterns = [
 
     # Vendor api for app
     path("vendors/", VendorViews.as_view(), name="vendor"),
+
+    # Download report
+    path('report_download/', report, name="report_download"),
 ]
