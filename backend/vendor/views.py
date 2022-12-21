@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
 from cart.models import Cart, CartItem
+from user.send_email import send_mail
 from xhtml2pdf import pisa
 from django.template.loader import get_template
 from io import BytesIO
@@ -49,9 +50,12 @@ def dashboard_register(request):
                 "email": email_to, "path": path})
             subject = "Registration confirmation"
 
-            EmailThead([email_to], message, subject).start()
+            # EmailThead(email_to, subject ,message).start()
+            # send_mail(recipient=email_to, subject=subject ,message=message)
 
-            messages.info(request, "Account created, check your email,login to start")
+
+            # messages.info(request, "Account created, check your email,login to start")
+            messages.info(request, "Account created, Create your shop below")
             try:
                 vendor_user = get_object_or_404(User, email=form.cleaned_data.get("email"))
                 if vendor_user:
@@ -64,6 +68,7 @@ def dashboard_register(request):
 
         else:
             print(form.errors)
+            messages.info(request, form.errors)
     return render(request, "auth/register.html",
                   {"title": "Account creation"})
 
@@ -196,38 +201,6 @@ def report(request):
     content = "attachment; filename='%s'" %(filename)
     response['Content-Disposition'] = content
     return response
-
-    # return render(request,"dashboard/report.html",context)
-
-
-
-
-# #Automaticly downloads to PDF file
-
-# class DownloadPDF(View):
-#     def get(self, request, *args, **kwargs):
-
-
-#         data = {
-#         "company": "Dennnis Ivanov Company",
-#         "address": "123 Street name",
-#         "city": "Vancouver",
-#         "state": "WA",
-#         "zipcode": "98663",
-
-
-#         "phone": "555-555-2345",
-#         "email": "youremail@dennisivy.com",
-#         "website": "dennisivy.com",
-#         }
-        
-#         pdf = render_to_pdf('app/report.html', data)
-
-#         response = HttpResponse(pdf, content_type='application/pdf')
-#         filename = "Invoice_%s.pdf" %("12341231")
-#         content = "attachment; filename='%s'" %(filename)
-#         response['Content-Disposition'] = content
-#         return response
 
 
 def shop_update(request):
@@ -446,7 +419,8 @@ def dashboard_contact(request):
             message = form.cleaned_data.get("message")
 
             # Email the admin
-            EmailThead([settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
+            # EmailThead([settings.EMAIL_HOST_USER, "kevinalex846@gmail.com"], message, subject).start()
+            # EmailThead(settings.EMAIL_HOST_USER, subject ,message).start()
 
             messages.info(request, "Help message received")
             return redirect("analytics")

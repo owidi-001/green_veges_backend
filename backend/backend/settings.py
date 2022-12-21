@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+
+from .secrets_1 import secrets
+
 # import sys
 # from django.core.management.utils import get_random_secret_key
 
@@ -203,11 +206,14 @@ AUTH_USER_MODEL = 'user.User'
 LOGOUT_REDIRECT_URL = "login"
 
 # email config
-EMAIL_BACKEND = env('EMAIL_BACKEND')
-EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
+# EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+# EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
 
-EMAIL_USE_TLS = env('EMAIL_USE_TLS')
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = env('PORT')
+# email config outlook
+EMAIL_PORT = 587
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+CONTENT_TYPE=os.getenv('CONTENT_TYPE')
+DEFAULT_FROM_EMAIL=EMAIL_HOST_USER
+EMAIL_USE_TLS=True

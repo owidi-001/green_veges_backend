@@ -25,14 +25,14 @@ from .schema import *
 
 
 class EmailThead(Thread):
-    def __init__(self, email_to, message, subject):
+    def __init__(self, email_to, subject,message):
         super().__init__()
         self.email_to = email_to
         self.message = message
         self.subject = subject
 
     def run(self):
-        send_mail(self.message, self.email_to, self.subject)
+        send_mail(recipient=self.email_to, subject=self.subject,message=self.message)
 
 
 # users
@@ -60,9 +60,9 @@ class RegisterUser(APIView):
             message = render_to_string("auth/registration_email.html", {
                 "email": email_to, "path": path})
             subject = "Registration confirmation"
-            # send_mail(message, [email_to])
 
-            # EmailThead([email_to], message, subject).start() # Uncomment on production
+
+            # EmailThead(email_to, subject ,message).start() # Uncomment on production
 
             return Response(data, status=200)
         else:
@@ -131,7 +131,7 @@ class ResetPasswordView(APIView):
                 "path": path
             })
 
-            EmailThead([email], message, subject).start()
+            # EmailThead(email, subject ,message).start()
 
             return Response(
                 {"message": f"please check code sent to {email} to change your password",
@@ -206,7 +206,7 @@ class UserProfileView(APIView):
             return Response(data, status=200)
         return Response({"errors": ["User not found"]}, status=400)
 
-    def put(self, request):
+    def post(self, request):
         """update profile - email, phone number"""
         form = UserUpdateForm(request.data)
 

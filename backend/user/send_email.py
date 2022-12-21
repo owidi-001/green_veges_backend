@@ -1,28 +1,45 @@
 import smtplib
+import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from django.conf import settings
 
+# port = 587
+# smtp_server = "smtp.office365.com"
+# sender = "owidikevin@outlook.com"
+# sender_password = "@Letmein24/7."
+# contentType="plain"
 
-# send full logs to mail
-def send_mail(body, recipients: list, subject):
-    # setup email
-    email = settings.EMAIL_HOST_USER
-    password = settings.EMAIL_HOST_PASSWORD
+port = settings.EMAIL_PORT
+smtp_server = settings.EMAIL_HOST
+sender = settings.EMAIL_HOST_USER
+sender_password = settings.EMAIL_HOST_PASSWORD
+contentType= settings.CONTENT_TYPE
 
-    # Create a multipart message and set headers
-    message = MIMEMultipart()
-    message["From"] = email
 
-    message["Subject"] = subject
+def send_mail(recipient,subject,message):
 
-    # Add body to email
-    message.attach(MIMEText(body, "html"))
+    print("Receipient")
+    print(recipient)
+    print("Subject")
+    print(subject)
+    print("Message")
+    print(message)
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-        server.login(email, password)
+    print("Connecting to server")
 
-        for recipient in recipients:
-            message["To"] = recipient
-            server.sendmail(email, recipient, message.as_string())
+    with smtplib.SMTP(smtp_server, port) as server:
+        server.starttls()
+        print("Loging in .....")
+        server.login(sender, sender_password)
+        print("Sending mail")
+
+        mimemsg = MIMEMultipart()
+        mimemsg["From"] = sender
+        mimemsg["To"] = recipient
+        mimemsg["Subject"] = subject
+        mimemsg.attach(MIMEText(message, contentType))
+
+        server.send_message(mimemsg)
+        server.close()
